@@ -851,6 +851,37 @@
         background-image: url('/images/milano.jpg');
     }
 
+    /* Contenedor de iconos */
+    .footer-socials {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: .5rem;
+    }
+
+    /* Enlaces de iconos */
+    .footer-social {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none !important;
+        color: #ffffffd0;
+        transition: all .25s ease;
+    }
+
+    /* Evitar subrayado en SVG */
+    .footer-social svg {
+        display: block;
+        text-decoration: none !important;
+    }
+
+    /* Hover elegante */
+    .footer-social:hover {
+        color: #facc6b; /* Dorado */
+        transform: translateY(-2px);
+    }
+
+
+
 /* ----- Responsive: en móvil que no sea acordeón sino tarjetas apiladas ----- */
     @media (max-width: 991.98px) {
         .fleet-accordion {
@@ -945,7 +976,7 @@
 <div class="container py-5">
 
     {{-- HERO CON CARRUSEL --}}
-    <div id="hero" class="landing-hero-wrapper mb-5">
+    <div id="" class="landing-hero-wrapper mb-5">
         <div class="row align-items-center g-4">
             {{-- Columna izquierda: texto principal --}}
             <div class="col-lg-6 position-relative">
@@ -1091,7 +1122,7 @@
         <div class="row g-4">
             {{-- Card 1: Aeropuerto → hotel --}}
             <div class="col-md-4">
-                <a href="{{ route('transfer.select-type') }}" class="transfer-card">
+                <a href="{{ route('login') }}" class="transfer-card">
                     <div class="transfer-card-icon">🛬</div>
                     <h3>Aeropuerto → hotel</h3>
                     <p>
@@ -1109,7 +1140,7 @@
 
             {{-- Card 2: Hotel → aeropuerto --}}
             <div class="col-md-4">
-                <a href="{{ route('transfer.select-type') }}" class="transfer-card">
+                <a href="{{ route('login') }}" class="transfer-card">
                     <div class="transfer-card-icon">🛫</div>
                     <h3>Hotel → aeropuerto</h3>
                     <p>
@@ -1127,7 +1158,7 @@
 
             {{-- Card 3: Ida y vuelta --}}
             <div class="col-md-4">
-                <a href="{{ route('transfer.select-type') }}" class="transfer-card">
+                <a href="{{ route('login') }}" class="transfer-card">
                     <div class="transfer-card-icon">🔁</div>
                     <h3>Ida y vuelta</h3>
                     <p>
@@ -1395,7 +1426,7 @@
                     <a href="{{ route('home') }}" class="site-footer-link">
                         <span>➜</span> Inicio
                     </a>
-                    <a href="{{ route('transfer.select-type') }}" class="site-footer-link">
+                    <a href="{{ route('login') }}" class="site-footer-link">
                         <span>➜</span> Reservar traslado
                     </a>
                     <a href="{{ route('login') }}" class="site-footer-link">
@@ -1418,10 +1449,46 @@
             <div class="d-flex justify-content-between align-items-center site-footer-bottom mt-4">
                 <span>© {{ date('Y') }} Isla Transfers. Todos los derechos reservados.</span>
 
-                <div class="d-flex gap-3">
-                    <a href="#" class="small">Términos y condiciones</a>
-                    <a href="#" class="small">Política de privacidad</a>
-                </div>
+            <div class="footer-socials">
+                <a href="#" class="footer-social">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.406.593 24 1.325
+                                24h11.495v-9.294H9.691V11.01h3.129V8.414c0-3.1 1.893-4.788
+                                4.659-4.788 1.325 0 2.463.099 2.794.143v3.24l-1.918.001c-1.504
+                                0-1.796.715-1.796 1.763v2.316h3.587l-.467 3.696h-3.12V24h6.116C23.406
+                                24 24 23.406 24 22.676V1.325C24 .593 23.406 0 22.675 0z"/>
+                    </svg>
+                </a>
+
+                <a href="#" class="footer-social">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25
+                                22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75
+                                2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75
+                                20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25
+                                3.5h-8.5zM12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10zm0 1.5a3.5 3.5 0 1 0 0
+                                7a3.5 3.5 0 0 0 0-7zm5.25-.25a1.25 1.25 0 1 1 0-2.5a1.25 1.25 0 0
+                                1 0 2.5z"/>
+                    </svg>
+                </a>
+
+
+               <a href="#" class="footer-social">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path d="M18.244 2H21L14.48 10.01L22 22h-6.56l-4.57-6.94L5.06
+                                22H2l7.05-8.63L2 2h6.72l4.13 6.27L18.244 2zm-2.37
+                                17.31h1.3L7.41 4.62H6.02l9.854 14.69z"/>
+                    </svg>
+                </a>
+
+            </div>
+
+            <div class="d-flex gap-3">
+                <a href="#" class="small">Términos y condiciones</a>
+                <a href="#" class="small">Política de privacidad</a>
             </div>
         </div>
     </footer>
