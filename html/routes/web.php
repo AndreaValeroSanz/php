@@ -10,15 +10,19 @@ use App\Http\Controllers\CorporateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VehiculosController;
+use App\Http\Controllers\LandingController;
 
 // =====================================================================
 // 1. RUTAS PÚBLICAS Y DE AUTENTICACIÓN
 // =====================================================================
 
 // Home
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+// Route::get('/', function () {
+//     return view('home');
+// })->name('home');
+
+// Landing
+Route::get('/', [LandingController::class, 'index'])->name('home');
 
 // Login
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -117,8 +121,8 @@ Route::middleware(['auth:admin,corporate,web'])->group(function () {
 
             Route::delete('vehiculos/{id}', [VehiculosController::class, 'destroy'])
                 ->name('vehiculos.destroy');
-            
-            
+
+
 // ---------------------------------------------------------------
 // 3.D.2) ADMIN → GESTIÓN DE HOTELES
 // ---------------------------------------------------------------
