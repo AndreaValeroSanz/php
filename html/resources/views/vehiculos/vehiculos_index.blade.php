@@ -20,6 +20,7 @@
                 <th>Descripción</th>
                 <th>Email Conductor</th>
                 <th>Matrícula</th>
+                <th>Estado</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -32,22 +33,30 @@
                     <td>{{ $v->email_conductor }}</td>
                     <td>{{ $v->password }}</td>
                     <td>
+                        @if($v->activo)
+                            <span class="badge bg-success">Activo</span>
+                        @else
+                            <span class="badge bg-danger">Inhabilitado</span>
+                        @endif
+                    </td>
+                    <td>
                         <a href="{{ route('admin.vehiculos.edit', $v->id_vehiculo) }}" class="btn btn-sm btn-warning">
                             Editar
                         </a>
 
-                        <form action="{{ route('admin.vehiculos.destroy', $v->id_vehiculo) }}"
-                              method="POST"
-                              style="display:inline-block">
-                            @csrf
-                            @method('DELETE')
-
-                            <button type="submit" class="btn btn-sm btn-danger"
-                                    onclick="return confirm('¿Eliminar este vehículo?')">
-                                Borrar
-                            </button>
-                        </form>
-
+                        @if($v->activo)
+                            <form method="POST" action="{{ route('admin.vehiculos.disable', $v->id_vehiculo) }}" style="display:inline-block">
+                                @csrf
+                                @method('PUT')
+                                <button class="btn btn-warning btn-sm">Inhabilitar</button>
+                            </form>
+                        @else
+                            <form method="POST" action="{{ route('admin.vehiculos.enable', $v->id_vehiculo) }}" style="display:inline-block">
+                                @csrf
+                                @method('PUT')
+                                <button class="btn btn-success btn-sm">Habilitar</button>
+                            </form>
+                        @endif
                     </td>
                 </tr>
             @endforeach
