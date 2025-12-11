@@ -233,7 +233,7 @@ if (Auth::guard('web')->check()) {
             $data['fecha_entrada'] = $request->fecha_llegada;
             $data['hora_entrada'] = $request->hora_llegada;
             $data['numero_vuelo_entrada'] = $request->num_vuelo ?? $request->num_vuelo_ida;
-            $data['origen_vuelo_entrada'] = "Aeropuerto";
+            $data['origen_vuelo_entrada'] = $request->aeropuerto_origen;
         }
 
         if ($type === 'hotel_to_airport' || $type === 'round_trip') {

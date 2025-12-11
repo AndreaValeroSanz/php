@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\Reserva;
-use App\Models\Hotel; // Añadido para cargar hoteles en el form de edición
+use App\Models\Hotel;
+use App\Models\Vehiculo;
 
 class MisReservasController extends Controller
 {
@@ -34,7 +35,7 @@ elseif (Auth::guard('web')->check()) {
 
     // ADMIN
     if ($rol == 'admin') {
-        $reservas = Reserva::with(['hotel', 'owner', 'zona'])->get();
+        $reservas = Reserva::with(['hotel', 'owner', 'zona', 'vehiculo'])->get();
     }
 
     // HOTEL
@@ -67,7 +68,7 @@ elseif (Auth::guard('web')->check()) {
    public function edit($id)
         {
             $reserva = Reserva::findOrFail($id);
-
+$vehiculos = Vehiculo::where('activo', 1)->get();
             $user = Auth::guard('admin')->user()
                 ?? Auth::guard('corporate')->user()
                 ?? Auth::guard('web')->user();
@@ -76,8 +77,8 @@ elseif (Auth::guard('web')->check()) {
                 (Auth::guard('corporate')->check() ? 'hotel' : 'user');
 
             $now = Carbon::now();
-            $reserva_fecha = Carbon::parse($reserva->fecha_reserva);
-            $puede_modificar = $rol == 'admin' || $reserva_fecha->diffInHours($now, false) > 48;
+           $reserva_fecha = $reserva->fechaLimite();
+$puede_modificar = $rol == 'admin' || $now->diffInHours($reserva_fecha, false) > 48;
 
             if (!$puede_modificar) {
                 return redirect()->route('mis_reservas')
@@ -95,7 +96,7 @@ elseif (Auth::guard('web')->check()) {
             $tipo = (int)$reserva->id_tipo_reserva; // ← AQUÍ estaba el error
             $vista = $map[$tipo] ?? abort(404, "Tipo de reserva desconocido");
 
-            return view("mis_reservas.$vista", compact('reserva', 'hotels'));
+            return view("mis_reservas.$vista", compact('reserva', 'hotels', 'vehiculos'));
         }
 
 /**
@@ -144,7 +145,7 @@ elseif (Auth::guard('web')->check()) {
         $reserva->numero_vuelo_salida  = $request->input('numero_vuelo_salida', $reserva->numero_vuelo_salida);
         $reserva->origen_vuelo_salida  = $request->input('origen_vuelo_salida', $reserva->origen_vuelo_salida);
         $reserva->hora_recogida_hotel  = $request->input('hora_recogida_hotel', $reserva->hora_recogida_hotel);
-
+$reserva->id_vehiculo = $request->input('id_vehiculo', $reserva->id_vehiculo);
         $reserva->save();
 
 
@@ -176,7 +177,8 @@ elseif (Auth::guard('web')->check()) {
                              ->with('error', 'No se puede eliminar esta reserva a menos de 48 horas.');
         }
 
-        $reserva->delete();
+        $reserva->estado = 'anulada';
+$reserva->save();
 
         return redirect()->route('mis_reservas')
                          ->with('success', 'Reserva eliminada correctamente.');

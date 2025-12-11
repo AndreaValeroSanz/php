@@ -121,7 +121,7 @@
                             @foreach ($reservasDetalladas as $reserva)
                                 <tr>
                                     <td>{{ $reserva->localizador }}</td>
-                                    <td>{{ $reserva->vehiculo->descripcion ?? '-' }}</td>
+                                    <td>{{ $reserva->vehiculo->descripcion }}</td>
                                     <td>{{ $reserva->tipo_traslado_nombre }}</td>
                                     <td>{{ number_format($reserva->precio_total, 2) }} €</td>
                                     <td class="fw-bold text-success">

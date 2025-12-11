@@ -39,7 +39,8 @@ class Reserva extends Model
         'fecha_vuelo_salida',
         'numero_vuelo_salida',
         'origen_vuelo_salida',
-        'hora_recogida_hotel',  
+        'hora_recogida_hotel',
+        'estado',  
     ];
 
     
@@ -69,6 +70,42 @@ class Reserva extends Model
     {
         return $this->belongsTo(\App\Models\Vehiculo::class, 'id_vehiculo', 'id_vehiculo');
     }
+
+public function fechaLimite()
+{
+    if ($this->id_tipo_reserva == 1) {
+        return \Carbon\Carbon::parse($this->fecha_entrada);
+    }
+
+    if ($this->id_tipo_reserva == 2) {
+        return \Carbon\Carbon::parse($this->fecha_vuelo_salida);
+    }
+
+    if ($this->id_tipo_reserva == 3) {
+        return \Carbon\Carbon::parse($this->fecha_entrada);
+    }
+
+    return null;
+}
+
+public function getEstadoFinalAttribute()
+{
+    // Si está anulada en BD: siempre anulada
+    if ($this->estado === 'anulada') {
+        return 'Anulada';
+    }
+
+    // Si ya ha pasado: finalizada
+    $fechaTraslado = $this->fecha_entrada ?? $this->fecha_vuelo_salida;
+
+    if ($fechaTraslado && \Carbon\Carbon::parse($fechaTraslado)->isPast()) {
+        return 'Finalizada';
+    }
+
+    // Si aún no ha pasado: confirmada
+    return 'Confirmada';
+}
+
 
 //Descriptores para mostrar tipo de traslado en lugar de ID's
 public function getTipoTrasladoNombreAttribute()
