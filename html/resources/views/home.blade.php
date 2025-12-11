@@ -1008,7 +1008,7 @@
                 </div>
 
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="{{ route('transfer.select-type') }}" class="btn btn-teal">
+                    <a href="{{ route('login') }}" class="btn btn-teal">
                         Reservar traslado
                     </a>
                     <a href="{{ route('login') }}" class="btn btn-soft-yellow">
