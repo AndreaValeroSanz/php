@@ -9,10 +9,13 @@ use Illuminate\Validation\ValidationException;
 use App\Models\Reserva;
 use App\Models\Precio;
 use App\Models\Hotel;
+use App\Models\Viajero;
 
 class TransferController extends Controller
 {
-    // === Paso 1: Selección del Tipo de Reserva ===
+    // ============================================================
+    // 1) Selección del tipo de reserva
+    // ============================================================
     public function showTypeSelection()
     {
         return view('transfers.type');
@@ -24,161 +27,196 @@ class TransferController extends Controller
             'reservation_type' => 'required|in:airport_to_hotel,hotel_to_airport,round_trip',
         ]);
 
-        return redirect()->route('transfer.reserve.form', ['type' => $request->reservation_type]);
+        return redirect()->route('transfer.reserve.form', [
+            'type' => $request->reservation_type
+        ]);
     }
 
-    // === Paso 2: Mostrar el Formulario Específico ===
+    // ============================================================
+    // 2) Mostrar formulario de reserva
+    // ============================================================
     public function showReservationForm($type)
     {
-        // 1. Validar Tipo
         if (!in_array($type, ['airport_to_hotel', 'hotel_to_airport', 'round_trip'])) {
-            return redirect()->route('transfer.select-type')->with('error', 'Tipo de reserva no válido.');
+            return redirect()->route('transfer.select-type')->with('error', 'Tipo no válido.');
         }
 
-        // 2. Obtener Datos
         $user = Auth::user();
-
-        // 3. Restricción de 48 Horas
         $minDate = Carbon::now()->addHours(48)->format('Y-m-d H:i');
-        
-        // 4. Obtener lista de hoteles desde la BDD
-        $hotels = Hotel::all();
-        
-        // 5. Mapear Vista y Datos
+        $hotels = Hotel::where('activo', 1)->get();
+        $vehiculos = collect([]);
+
+        if ($hotels->count() > 0) {
+            $vehiculos = Precio::where('transfer_precios.id_hotel', $hotels[0]->id_hotel)
+    ->join('transfer_vehiculos', 'transfer_precios.id_vehiculo', '=', 'transfer_vehiculos.id_vehiculo')
+    ->where('transfer_vehiculos.activo', 1)
+    ->select([
+        'transfer_vehiculos.id_vehiculo',
+        'transfer_vehiculos.descripcion',
+        'transfer_precios.Precio'
+    ])
+    ->get();
+    // Si quien crea la reserva es un admin o un hotel,
+// necesitamos lista de viajeros para asignar la reserva.
+$viajeros = collect([]);
+
+if (Auth::guard('admin')->check() || Auth::guard('corporate')->check()) {
+    $viajeros = Viajero::orderBy('nombre')->get();
+}
+
+        }
+
         $viewMap = [
             'airport_to_hotel' => 'transfers.airport-to-hotel',
             'hotel_to_airport' => 'transfers.hotel-to-airport',
             'round_trip' => 'transfers.round-trip',
         ];
 
-        return view($viewMap[$type], compact('user', 'minDate', 'hotels'));
+        return view($viewMap[$type], compact('user', 'minDate', 'hotels', 'vehiculos', 'viajeros'));
     }
 
-    // === Paso 3: Confirmar la Reserva ===
+    // ============================================================
+    // 3) Confirmar reserva
+    // ============================================================
     public function confirmReservation(Request $request)
     {
-        // 1. Validaciones
+        // Validación básica
         $rules = [
             'reservation_type' => 'required|in:airport_to_hotel,hotel_to_airport,round_trip',
             'pax' => 'required|integer|min:1',
             'email_contacto' => 'required|email',
             'nombre_contacto' => 'required|string',
             'telefono' => 'required|string',
+            'id_vehiculo' => 'required|integer',
         ];
-        
+
+        // Si la reserva la hace un hotel o un admin, debe seleccionar un viajero
+if (Auth::guard('corporate')->check() || Auth::guard('admin')->check()) {
+    $rules['id_viajero'] = 'required|exists:transfer_viajeros,id_viajero';
+}
+
+
+        // Restricción: 48 horas
         $minDate = Carbon::now()->addHours(48)->format('Y-m-d');
-        
-        // Reglas para tramos de IDA (Aeropuerto -> Hotel)
+
+        // Validaciones específicas
         if ($request->reservation_type === 'airport_to_hotel') {
-            $rules['fecha_llegada'] = 'required|date_format:Y-m-d|after_or_equal:' . $minDate;
-            $rules['hora_llegada'] = 'required|date_format:H:i';
-            $rules['id_hotel_destino'] = 'required|integer';
-            $rules['num_vuelo'] = 'required|string';
+            $rules += [
+                'fecha_llegada' => "required|date|after_or_equal:$minDate",
+                'hora_llegada' => "required",
+                'id_hotel_destino' => "required|integer",
+                'num_vuelo' => "required|string",
+                'aeropuerto_origen' => "required|string",
+            ];
         }
 
-        // Reglas para tramos de VUELTA (Hotel -> Aeropuerto)
         if ($request->reservation_type === 'hotel_to_airport') {
-            $rules['fecha_vuelo_salida'] = 'required|date_format:Y-m-d|after_or_equal:' . $minDate;
-            $rules['hora_vuelo_salida'] = 'required|date_format:H:i';
-            $rules['id_hotel_recogida'] = 'required|integer';
-            $rules['hora_recogida'] = 'required|date_format:H:i'; 
+            $rules += [
+                'fecha_vuelo_salida' => "required|date|after_or_equal:$minDate",
+                'hora_vuelo_salida' => "required",
+                'id_hotel_recogida' => "required|integer",
+                'hora_recogida' => "required",
+            ];
         }
-        
-        // ✅ FIX VALIDACIÓN: Reglas para IDA Y VUELTA (ROUND_TRIP)
+
         if ($request->reservation_type === 'round_trip') {
-            // TRAMO IDA
-            $rules['fecha_llegada'] = 'required|date_format:Y-m-d|after_or_equal:' . $minDate;
-            $rules['hora_llegada'] = 'required|date_format:H:i';
-            $rules['id_hotel_destino'] = 'required|integer';
-            $rules['num_vuelo_ida'] = 'required|string';
-            
-            // TRAMO VUELTA
-            $rules['fecha_vuelo_salida'] = 'required|date_format:Y-m-d|after_or_equal:' . $minDate;
-            $rules['hora_vuelo_salida'] = 'required|date_format:H:i';
-            $rules['id_hotel_recogida'] = 'required|integer';
-            $rules['hora_recogida_vuelta'] = 'required|date_format:H:i'; 
+            $rules += [
+                // IDA
+                'fecha_llegada' => "required|date|after_or_equal:$minDate",
+                'hora_llegada' => "required",
+                'id_hotel_destino' => "required|integer",
+                'num_vuelo_ida' => "required|string",
+
+                // VUELTA
+                'fecha_vuelo_salida' => "required|date|after_or_equal:$minDate",
+                'hora_vuelo_salida' => "required",
+                'id_hotel_recogida' => "required|integer",
+                'hora_recogida_vuelta' => "required",
+            ];
         }
 
         $request->validate($rules);
 
-        // 2. Crear el registro en transfer_reservas con datos de la BDD
+        // Crear la reserva
         $localizador = $this->createReservationRecord($request);
-        
-        // 3. Mostrar la Confirmación (Punto 11)
+
         return view('transfers.confirmation', compact('localizador'));
     }
-    
-    // Método para crear el registro y obtener el localizador
+
+    // ============================================================
+    // 4) Crear registro en BD
+    // ============================================================
     private function createReservationRecord(Request $request)
     {
         $type = $request->reservation_type;
         $now = Carbon::now();
-        
-        // 1. Mapear el tipo de reserva de string a ID 
-        $tipoReservaId = match ($type) {
-            'airport_to_hotel' => 1,
-            'hotel_to_airport' => 2,
-            'round_trip' => 3,
-            default => 1,
-        };
 
-        // 2. Identificar el Hotel de referencia y Viajero logueado
+        // --- DETERMINAR A QUIÉN PERTENECE LA RESERVA (OWNER) ---
+
+// Si la reserva la hace un viajero logueado → él es el dueño
+if (Auth::guard('web')->check()) {
+    $idOwner = Auth::guard('web')->user()->id_viajero;
+    $tipoOwner = 'user';
+} else {
+    // Si la hace un hotel o un admin → el dueño es el viajero seleccionado en el formulario
+    $idOwner = (int) $request->id_viajero;
+
+    if (!$idOwner) {
+        throw ValidationException::withMessages([
+            'id_viajero' => 'Debe seleccionar un viajero para asignar la reserva.',
+        ]);
+    }
+
+    // IMPORTANTE: aunque la cree un hotel o admin, la reserva pertenece a un "user" (viajero)
+    $tipoOwner = 'user';
+}
+
+        // Detectar hotel según tipo
         $hotelId = $request->id_hotel_destino ?? $request->id_hotel_recogida;
-        
-        $idViajero = null;
-        $authGuards = ['web', 'corporate']; // Guards permitidos en routes/web.php
-        
-        foreach ($authGuards as $guard) {
-            if (Auth::guard($guard)->check()) {
-                $idViajero = Auth::guard($guard)->id();
-                break; 
-            }
-        }
-        
-        // Aseguramos que idViajero sea NULL o INT
-        $idViajero = (is_numeric($idViajero)) ? (int)$idViajero : 0;
-        
-        
-        // 3. LÓGICA DE PRECIOS Y VEHÍCULOS DESDE transfer_precios
-        
+
+        // Selección real del vehículo
+        $idVehiculo = $request->id_vehiculo;
+
         $transferPrice = Precio::where('id_hotel', $hotelId)
-                               ->orderBy('Precio', 'asc')
-                               ->first();
+            ->where('id_vehiculo', $idVehiculo)
+            ->first();
 
         if (!$transferPrice) {
-            throw ValidationException::withMessages(['hotel' => 'El hotel seleccionado no tiene tarifas configuradas. Por favor, seleccione otro hotel.']);
+            throw ValidationException::withMessages([
+                'vehiculo' => 'No existe tarifa configurada para este vehículo en este hotel.',
+            ]);
         }
 
-        $idVehiculo = $transferPrice->id_vehiculo;
-        $precioUnitario = $transferPrice->Precio;
-        
-        // Calcular precio total (duplicar si es ida y vuelta)
-        $multiplicador = ($type === 'round_trip') ? 2 : 1;
-        $precioTotal = $precioUnitario * $multiplicador;
+        $precioBase = $transferPrice->Precio;
+        $precioFinal = $precioBase * ($type === 'round_trip' ? 2 : 1);
 
-        // Lógica de Comisión (Simulada al 10%)
-        $comisionRate = 0.10; 
-        $comisionGanada = round($precioTotal * $comisionRate, 2);
-        
-        // 4. Mapeo de datos para la base de datos
+        // Crear array de datos
         $data = [
             'localizador' => strtoupper(uniqid('TR-')),
-            'id_tipo_reserva' => $tipoReservaId,
+            'id_tipo_reserva' => [
+                'airport_to_hotel' => 1,
+                'hotel_to_airport' => 2,
+                'round_trip' => 3,
+            ][$type],
+
             'email_cliente' => $request->email_contacto,
-            'id_owner' => $idViajero,
-            'tipo_owner' => 'user',  // porque es un viajero
+            'id_owner' => $idOwner,
+            'tipo_owner' => $tipoOwner,
+
             'fecha_reserva' => $now,
             'fecha_modificacion' => $now,
+
             'id_hotel' => $hotelId,
             'id_destino' => $hotelId,
-            'num_viajeros' => $request->pax,
-            
 
-            'id_vehiculo' => $idVehiculo,       
-            'precio_total' => $precioTotal,  
-            'comision_ganada' => $comisionGanada, 
+            'num_viajeros' => $request->pax,
+
+            'id_vehiculo' => $idVehiculo,
+            'precio_total' => $precioFinal,
+            'comision_ganada' => round($precioFinal * 0.10, 2),
             'comision_liquidada' => 0,
-            
+
+            // Valores por defecto
             'fecha_entrada' => null,
             'hora_entrada' => null,
             'numero_vuelo_entrada' => null,
@@ -189,31 +227,30 @@ class TransferController extends Controller
             'origen_vuelo_salida' => null,
             'hora_recogida_hotel' => null,
         ];
-        
-        // 5. Llenar campos específicos según el tipo de reserva
+
+        // --- MAPEO DE CAMPOS SEGÚN EL TIPO ---
         if ($type === 'airport_to_hotel' || $type === 'round_trip') {
             $data['fecha_entrada'] = $request->fecha_llegada;
             $data['hora_entrada'] = $request->hora_llegada;
-            // Mapeo: num_vuelo para ida o num_vuelo_ida para round_trip
-            $data['numero_vuelo_entrada'] = $request->num_vuelo ?? $request->num_vuelo_ida; 
-            $data['origen_vuelo_entrada'] = $request->aeropuerto_origen ?? 'Aeropuerto de Origen';
+            $data['numero_vuelo_entrada'] = $request->num_vuelo ?? $request->num_vuelo_ida;
+            $data['origen_vuelo_entrada'] = "Aeropuerto";
         }
 
         if ($type === 'hotel_to_airport' || $type === 'round_trip') {
             $data['fecha_vuelo_salida'] = $request->fecha_vuelo_salida;
-            
-            // Combinar la fecha y hora para el campo TIMESTAMP (hora_vuelo_salida)
-            $fechaSalida = $request->fecha_vuelo_salida;
-            $horaSalida = $request->hora_vuelo_salida;
-            if ($fechaSalida && $horaSalida) {
-                $data['hora_vuelo_salida'] = Carbon::parse("$fechaSalida $horaSalida"); 
-            }
+            $data['numero_vuelo_salida'] = $request->num_vuelo_salida ?? $request->num_vuelo;
+            $data['origen_vuelo_salida'] = "Hotel";
+
+            $data['hora_vuelo_salida'] = Carbon::parse(
+                $request->fecha_vuelo_salida . " " . $request->hora_vuelo_salida
+            );
+
+            $data['hora_recogida_hotel'] = $request->hora_recogida ?? $request->hora_recogida_vuelta;
         }
 
-        // 6. Guardar en la Base de Datos
+        // Guardar en BD
         $reserva = Reserva::create($data);
 
-        // 7. Devolver el localizador único
         return $reserva->localizador;
     }
 }

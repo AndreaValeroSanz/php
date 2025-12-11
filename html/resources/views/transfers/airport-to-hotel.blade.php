@@ -48,18 +48,26 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="num_vuelo" class="form-label">Número de Vuelo</label>
-                            <input type="text" class="form-control @error('num_vuelo') is-invalid @enderror" 
-                                   id="num_vuelo" name="num_vuelo" 
-                                   value="{{ old('num_vuelo') }}" required>
+                            <input type="text"
+       class="form-control"
+       id="num_vuelo"
+       name="num_vuelo"
+       placeholder="Ej: VY6239"
+       value="{{ old('num_vuelo') }}"
+       required>
                             @error('num_vuelo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="aeropuerto_origen" class="form-label">Aeropuerto de Origen</label>
-                            <input type="text" class="form-control @error('aeropuerto_origen') is-invalid @enderror" 
-                                   id="aeropuerto_origen" name="aeropuerto_origen" 
-                                   value="{{ old('aeropuerto_origen', 'Aeropuerto de Origen') }}" required>
+                            <input type="text"
+       class="form-control @error('aeropuerto_origen') is-invalid @enderror"
+       id="aeropuerto_origen"
+       name="aeropuerto_origen"
+       placeholder="Ej: Aeropuerto de Madrid-Barajas"
+       value="{{ old('aeropuerto_origen') }}"
+       required>
                             @error('aeropuerto_origen')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -67,7 +75,7 @@
                     </div>
 
                     {{-- 2. Destino y Pasajeros --}}
-                    <h5 class="mt-4 mb-3 text-primary"><i class="fas fa-hotel"></i> Destino y Pasajeros</h5>
+                    <h5 class="mt-4 mb-3 text-primary"><i class="fas fa-hotel"></i> Destino </h5>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="id_hotel_destino" class="form-label">Selección de Hotel Destino</label>
@@ -80,9 +88,9 @@
                                 {{-- Input oculto con el ID --}}
                                 <input type="hidden" name="id_hotel_destino" value="{{ $hotels->first()->id_hotel }}">
                             @else
-                                <select class="form-control @error('id_hotel_destino') is-invalid @enderror" 
+                                <select class="form-select @error('id_hotel_destino') is-invalid @enderror" 
                                         id="id_hotel_destino" name="id_hotel_destino">
-                                    <option value="">Seleccione su Hotel Destino</option>
+                                    <option value="">-- Seleccione el Hotel --</option>
                                     @foreach($hotels as $hotel)
                                         <option value="{{ $hotel->id_hotel }}" @if(old('id_hotel_destino') == $hotel->id_hotel) selected @endif>{{ $hotel->nombre }}</option>
                                     @endforeach
@@ -92,38 +100,87 @@
                                 @enderror
                             @endif
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="pax" class="form-label">Número de Pasajeros</label>
-                            <input type="number" class="form-control @error('pax') is-invalid @enderror" 
-                                   id="pax" name="pax" value="{{ old('pax', 1) }}" min="1" required>
-                            @error('pax')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
+                       {{-- Selector de Vehículo y Pasajeros --}}
+<h5 class="mt-4 mb-1 text-primary">
+    <i class="fas fa-car"></i> Selecciona el Vehículo y los Pasajeros
+</h5>
+
+<p class="text-muted mb-3" style="font-size: 0.9rem;">
+    Asignaremos uno o más vehículos del modelo que escojas según el número de pasajeros.
+</p>
+
+{{-- Vehículo --}}
+<div class="mb-3">
+    <label for="id_vehiculo" class="form-label">Vehículo</label>
+    <select class="form-select @error('id_vehiculo') is-invalid @enderror"
+            name="id_vehiculo"
+            id="id_vehiculo"
+            required>
+        <option value="">-- Seleccione un vehículo --</option>
+        @foreach($vehiculos as $vehiculo)
+            <option value="{{ $vehiculo->id_vehiculo }}">
+                {{ $vehiculo->descripcion }} — {{ $vehiculo->Precio }} €
+            </option>
+        @endforeach
+    </select>
+
+    @error('id_vehiculo')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+{{-- Número de pasajeros --}}
+<div class="mb-3">
+    <label for="pax" class="form-label">Número de Pasajeros</label>
+    <input type="number"
+           class="form-control @error('pax') is-invalid @enderror"
+           id="pax"
+           name="pax"
+           value="{{ old('pax', 1) }}"
+           min="1"
+           required>
+    @error('pax')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
 
                     {{-- 3. Datos Personales --}}
                     <h5 class="mt-4 mb-3 text-primary"><i class="fas fa-user"></i> Datos del Contacto</h5>
                     
                     {{-- Lógica robusta para obtener datos según el Guard activo --}}
                     @php
-                        $nombre = old('nombre_contacto');
-                        $email = old('email_contacto');
+    // Por defecto, si hay errores anteriores, mantenerlos
+    $nombre = old('nombre_contacto');
+    $email = old('email_contacto');
 
-                        if (Auth::guard('web')->check()) {
-                            $u = Auth::guard('web')->user();
-                            $nombre = $u->nombre . ' ' . ($u->apellido1 ?? '');
-                            $email = $u->email_viajero;
-                        } elseif (Auth::guard('corporate')->check()) {
-                            $u = Auth::guard('corporate')->user();
-                            $nombre = $u->nombre; // Nombre del hotel como contacto
-                            $email = $u->email_hotel;
-                        } elseif (Auth::guard('admin')->check()) {
-                            $u = Auth::guard('admin')->user();
-                            $nombre = $u->nombre;
-                            $email = $u->email_admin;
-                        }
-                    @endphp
+    // Si es un viajero web, sí rellenamos automáticamente
+    if (Auth::guard('web')->check()) {
+        $u = Auth::guard('web')->user();
+        $nombre = $u->nombre . ' ' . ($u->apellido1 ?? '');
+        $email = $u->email_viajero;
+    }
+
+    // Si es hotel o admin, NO rellenamos nada.
+    // Los datos deben ser siempre los del viajero seleccionado.
+@endphp
+
+
+                    @if(Auth::guard('corporate')->check() || Auth::guard('admin')->check())
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <label for="id_viajero" class="form-label">Asignar reserva al viajero</label>
+            <select name="id_viajero" id="id_viajero" class="form-select @error('id_viajero') is-invalid @enderror" required>
+                <option value="">-- Seleccione un viajero --</option>
+                @foreach($viajeros as $v)
+                    <option value="{{ $v->id_viajero }}">{{ $v->nombre }} {{ $v->apellido1 }} — {{ $v->email_viajero }}</option>
+                @endforeach
+            </select>
+            @error('id_viajero')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+    </div>
+@endif
 
                     <div class="row">
                         <div class="col-md-4 mb-3">
