@@ -17,8 +17,8 @@
                             <th>Tipo</th>
                             <th>Vehículo</th>
                             <th>Hotel</th>
-                            <th>Destino</th>
-                            <th>Fecha/Hora Entrada</th>
+                            <th>Zona</th>
+                            <th>Fecha Traslado</th>
                             <th>Pasajeros</th>
                             <th>Precio Total</th>
                             <th>Comisión</th>
