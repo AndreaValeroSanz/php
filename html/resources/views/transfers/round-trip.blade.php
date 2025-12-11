@@ -34,7 +34,13 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="num_vuelo_ida" class="form-label">Nº Vuelo (Ida)</label>
-                            <input type="text" class="form-control" id="num_vuelo_ida" name="num_vuelo_ida" value="{{ old('num_vuelo_ida') }}" required>
+                            <input type="text"
+       class="form-control"
+       id="num_vuelo_ida"
+       name="num_vuelo_ida"
+       placeholder="Ej: VY6239"
+       value="{{ old('num_vuelo_ida') }}"
+       required>
                         </div>
                     </div>
 
@@ -49,7 +55,7 @@
                                 <input type="hidden" name="id_hotel_destino" value="{{ $hotels->first()->id_hotel }}">
                             @else
                                 <select class="form-select" id="id_hotel_destino" name="id_hotel_destino" required>
-                                    <option value="">Seleccione un hotel</option>
+                                    <option value="">-- Seleccione un Hotel --</option>
                                     @foreach($hotels as $hotel)
                                         <option value="{{ $hotel->id_hotel }}" @if(old('id_hotel_destino') == $hotel->id_hotel) selected @endif>{{ $hotel->nombre }}</option>
                                     @endforeach
@@ -69,61 +75,166 @@
                             <input type="date" class="form-control" id="fecha_vuelo_salida" name="fecha_vuelo_salida" value="{{ old('fecha_vuelo_salida') }}" min="{{ Carbon\Carbon::parse($minDate)->format('Y-m-d') }}" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="hora_vuelo_salida" class="form-label">Hora Vuelo Salida</label>
-                            <input type="time" class="form-control" id="hora_vuelo_salida" name="hora_vuelo_salida" value="{{ old('hora_vuelo_salida') }}" required>
-                        </div>
+    <label for="hora_recogida_vuelta" class="form-label">Hora de Recogida</label>
+    <input type="time" class="form-control"
+           id="hora_recogida_vuelta"
+           name="hora_recogida_vuelta"
+           value="{{ old('hora_recogida_vuelta') }}"
+           required>
+
+    <small class="text-muted">Recomendado: 3-4 horas antes del vuelo.</small>
+
+    @error('hora_recogida_vuelta')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="id_hotel_recogida" class="form-label">Hotel de Recogida</label>
-                            
-                            {{-- LOGICA CORPORATIVA (Mismo hotel) --}}
-                            @if(Auth::guard('corporate')->check())
-                                <input type="text" class="form-control bg-light" value="{{ $hotels->first()->nombre }}" readonly>
-                                <input type="hidden" name="id_hotel_recogida" value="{{ $hotels->first()->id_hotel }}">
-                            @else
-                                <select class="form-control" id="id_hotel_recogida" name="id_hotel_recogida" required>
-                                    <option value="">Seleccione su Hotel</option>
-                                    @foreach($hotels as $hotel)
-                                        <option value="{{ $hotel->id_hotel }}" @if(old('id_hotel_recogida') == $hotel->id_hotel) selected @endif>{{ $hotel->nombre }}</option>
-                                    @endforeach
-                                </select>
-                            @endif
-                        </div>
+                    {{-- HOTEL DE RECOGIDA --}}
+<div class="col-md-6 mb-3">
+    <label for="id_hotel_recogida" class="form-label">Hotel de Recogida</label>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="hora_recogida_vuelta" class="form-label">Hora de Recogida</label>
-                            <input type="time" class="form-control" id="hora_recogida_vuelta" name="hora_recogida_vuelta" value="{{ old('hora_recogida_vuelta') }}" required>
-                        </div>
-                    </div>
+    {{-- Caso 1: Usuario corporativo (hotel) --}}
+    @if(Auth::guard('corporate')->check())
+        
+        {{-- MOSTRAR EL HOTEL DEL USUARIO --}}
+        <input type="text" 
+               class="form-control bg-light"
+               value="{{ $hotels->first()->nombre }}" 
+               readonly>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="pax" class="form-label">Número de Pasajeros</label>
-                            <input type="number" class="form-control" id="pax" name="pax" value="{{ old('pax', 1) }}" min="1" required>
-                        </div>
-                    </div>
+        <input type="hidden" 
+               name="id_hotel_recogida" 
+               id="id_hotel_recogida"
+               value="{{ $hotels->first()->id_hotel }}">
+
+    @else
+        
+         {{-- Caso 2: User web o admin → mismo hotel que destino --}}
+        <input type="text"
+               class="form-control bg-light"
+               id="hotel_recogida_nombre"
+               value="El hotel de recogida será el mismo que el de destino"
+               readonly>
+
+        <input type="hidden"
+               name="id_hotel_recogida"
+               id="id_hotel_recogida">
+    @endif
+</div>
+
+{{-- Script para sincronizar recogida con destino cuando NO es hotel --}}
+@if(!Auth::guard('corporate')->check())
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const destinoSelect = document.getElementById('id_hotel_destino');
+    const recogidaNombre = document.getElementById('hotel_recogida_nombre');
+    const recogidaHidden = document.getElementById('id_hotel_recogida');
+
+    function syncHotel() {
+        if (!destinoSelect) return;
+
+        const option = destinoSelect.options[destinoSelect.selectedIndex];
+
+        if (option.value === "") {
+            recogidaNombre.value = "Será el mismo que el hotel de destino";
+            recogidaHidden.value = "";
+            return;
+        }
+
+        recogidaNombre.value = option.text;
+        recogidaHidden.value = option.value;
+    }
+
+    syncHotel();
+
+    destinoSelect.addEventListener('change', syncHotel);
+});
+</script>
+@endif
+
+
+ {{-- Selector de Vehículo y Pasajeros --}}
+<h5 class="mt-4 mb-1 text-primary">
+    <i class="fas fa-car"></i> Selecciona el Vehículo y los Pasajeros
+</h5>
+
+<p class="text-muted mb-3" style="font-size: 0.9rem;">
+    Asignaremos uno o más vehículos del modelo que escojas según el número de pasajeros.
+</p>
+
+{{-- Vehículo --}}
+<div class="mb-3">
+    <label for="id_vehiculo" class="form-label">Vehículo</label>
+    <select class="form-select @error('id_vehiculo') is-invalid @enderror"
+            name="id_vehiculo"
+            id="id_vehiculo"
+            required>
+        <option value="">-- Seleccione un vehículo --</option>
+        @foreach($vehiculos as $vehiculo)
+            <option value="{{ $vehiculo->id_vehiculo }}">
+                {{ $vehiculo->descripcion }} — {{ $vehiculo->Precio }} €
+            </option>
+        @endforeach
+    </select>
+
+    @error('id_vehiculo')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+{{-- Número de pasajeros --}}
+<div class="mb-3">
+    <label for="pax" class="form-label">Número de Pasajeros</label>
+    <input type="number"
+           class="form-control @error('pax') is-invalid @enderror"
+           id="pax"
+           name="pax"
+           value="{{ old('pax', 1) }}"
+           min="1"
+           required>
+    @error('pax')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
 
                     {{-- 4. Datos Personales --}}
                     <h5 class="mt-4 mb-3 text-primary"><i class="fas fa-user"></i> Datos del Contacto</h5>
                     @php
-                        $nombre = old('nombre_contacto');
-                        $email = old('email_contacto');
-                        if (Auth::guard('web')->check()) {
-                            $u = Auth::guard('web')->user();
-                            $nombre = $u->nombre . ' ' . ($u->apellido1 ?? '');
-                            $email = $u->email_viajero;
-                        } elseif (Auth::guard('corporate')->check()) {
-                            $u = Auth::guard('corporate')->user();
-                            $nombre = $u->nombre;
-                            $email = $u->email_hotel;
-                        } elseif (Auth::guard('admin')->check()) {
-                            $u = Auth::guard('admin')->user();
-                            $nombre = $u->nombre;
-                            $email = $u->email_admin;
-                        }
-                    @endphp
+    // Por defecto, si hay errores anteriores, mantenerlos
+    $nombre = old('nombre_contacto');
+    $email = old('email_contacto');
+
+    // Si es un viajero web, sí rellenamos automáticamente
+    if (Auth::guard('web')->check()) {
+        $u = Auth::guard('web')->user();
+        $nombre = $u->nombre . ' ' . ($u->apellido1 ?? '');
+        $email = $u->email_viajero;
+    }
+
+    // Si es hotel o admin, NO rellenamos nada.
+    // Los datos deben ser siempre los del viajero seleccionado.
+@endphp
+
+
+                    @if(Auth::guard('corporate')->check() || Auth::guard('admin')->check())
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <label for="id_viajero" class="form-label">Asignar reserva al viajero</label>
+            <select name="id_viajero" id="id_viajero" class="form-select @error('id_viajero') is-invalid @enderror" required>
+                <option value="">-- Seleccione un viajero --</option>
+                @foreach($viajeros as $v)
+                    <option value="{{ $v->id_viajero }}">{{ $v->nombre }} {{ $v->apellido1 }} — {{ $v->email_viajero }}</option>
+                @endforeach
+            </select>
+            @error('id_viajero')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+    </div>
+@endif
+
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="nombre_contacto" class="form-label">Nombre</label>

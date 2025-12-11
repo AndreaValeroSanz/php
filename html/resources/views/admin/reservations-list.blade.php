@@ -15,23 +15,34 @@
                         <tr>
                             <th>Localizador</th>
                             <th>Tipo</th>
+                            <th>Vehículo</th>
+                            <th>Hotel</th>
                             <th>Destino</th>
                             <th>Fecha/Hora Entrada</th>
-                            <th>Pax</th>
+                            <th>Pasajeros</th>
                             <th>Precio Total</th>
                             <th>Comisión</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($reservas as $reserva)
                             <tr>
                                 <td>{{ $reserva->localizador }}</td>
-                                <td>{{ $reserva->id_tipo_reserva }}</td>
+                                <td>{{ $reserva->tipo_traslado_nombre }}</td>
+                                <td>{{ $reserva->vehiculo->descripcion ?? 'N/A' }}</td>
                                 <td>{{ $reserva->hotel->nombre ?? 'N/A' }}</td>
+                                <td>{{ $reserva->zona->descripcion ?? 'N/A' }}</td>
                                 <td>{{ $reserva->fecha_entrada ?? 'N/A' }} {{ $reserva->hora_entrada }}</td>
                                 <td>{{ $reserva->num_viajeros }}</td>
                                 <td>{{ number_format($reserva->precio_total, 2) }} €</td>
                                 <td>{{ number_format($reserva->comision_ganada, 2) }} €</td>
+                                <td>
+                                    <a href="{{ route('admin.reserva.detalle', $reserva->id_reserva) }}" 
+                                    class="btn btn-sm btn-primary">
+                                        Ver
+                                    </a>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

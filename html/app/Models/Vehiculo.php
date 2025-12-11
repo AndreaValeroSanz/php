@@ -14,14 +14,14 @@ class Vehiculo extends Model
     public $timestamps = false; 
 
     protected $fillable = [
-        'Descripción',
+        'descripcion',
         'email_conductor',
         'password',
     ];
 
     public function getDescripcionAttribute() //Función para acceder al atributo descripción sin tilde
     {
-        return $this->attributes['Descripción'] ?? null;
+        return $this->attributes['descripcion'] ?? null;
     }
 
     public function reservas()
