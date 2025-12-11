@@ -7,7 +7,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: radial-gradient(circle at 50% -20%, #e0f2f1 0%, #f0fdfa 100%);
         padding: 2rem 1rem;
     }
 
