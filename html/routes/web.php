@@ -119,10 +119,12 @@ Route::middleware(['auth:admin,corporate,web'])->group(function () {
             Route::put('vehiculos/{id}', [VehiculosController::class, 'update'])
                 ->name('vehiculos.update');
 
-            Route::delete('vehiculos/{id}', [VehiculosController::class, 'destroy'])
-                ->name('vehiculos.destroy');
+            Route::put('vehiculos/{id}/disable', [VehiculosController::class, 'disable'])
+                ->name('vehiculos.disable');
 
-
+            Route::put('vehiculos/{id}/enable', [VehiculosController::class, 'enable'])
+                ->name('vehiculos.enable');   
+            
 // ---------------------------------------------------------------
 // 3.D.2) ADMIN → GESTIÓN DE HOTELES
 // ---------------------------------------------------------------
