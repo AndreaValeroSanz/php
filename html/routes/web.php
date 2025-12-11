@@ -57,7 +57,7 @@ Route::prefix('transfer')->group(function () {
 // =====================================================================
 // 3. RUTAS PROTEGIDAS (requieren login con cualquier rol)
 // =====================================================================
-Route::middleware(['auth:admin,corporate,web'])->group(function () {
+Route::middleware(['auth:admin,corporate,web', 'clear-others'])->group(function () {
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

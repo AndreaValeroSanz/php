@@ -155,14 +155,52 @@
 
             {{-- Botones derecha --}}
             <div class="d-flex gap-2">
-                <a href="{{ route('login') }}" class="btn btn-sm btn-outline-light">
-                    Login
-                </a>
-                <a href="{{ route('register') }}" class="btn btn-sm"
-                   style="background:#facc6b; color:#0f766e; font-weight:600;">
-                    Registro
-                </a>
-            </div>
+
+    {{-- Si NO estás logueado --}}
+    @if (!$isAdmin && !$isCorporate && !$isTraveler)
+        <a href="{{ route('login') }}" class="btn btn-sm btn-outline-light">
+            Login
+        </a>
+        <a href="{{ route('register') }}" class="btn btn-sm"
+           style="background:#facc6b; color:#0f766e; font-weight:600;">
+            Registro
+        </a>
+    @endif
+
+    {{-- Si eres ADMIN --}}
+    @if ($isAdmin)
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-sm btn-light">
+            Panel Admin
+        </a>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button class="btn btn-sm btn-danger">Salir</button>
+        </form>
+    @endif
+
+    {{-- Si eres HOTEL --}}
+    @if ($isCorporate)
+        <a href="{{ route('corporate.dashboard') }}" class="btn btn-sm btn-light">
+            Panel Hotel
+        </a>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button class="btn btn-sm btn-danger">Salir</button>
+        </form>
+    @endif
+
+    {{-- Si eres VIAJERO --}}
+    @if ($isTraveler)
+        <a href="{{ route('user.dashboard') }}" class="btn btn-sm btn-light">
+            Mi Cuenta
+        </a>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button class="btn btn-sm btn-danger">Salir</button>
+        </form>
+    @endif
+
+</div>
 
         </div>
     </div>
