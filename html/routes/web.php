@@ -104,6 +104,9 @@ Route::middleware(['auth:admin,corporate,web', 'clear-others'])->group(function 
             Route::get('/commissions', [AdminController::class, 'showCommissions'])
                 ->name('commissions');
 
+            Route::get('/reserva/{id}', [AdminController::class, 'showReservationDetail'])
+                ->name('reserva.detalle');
+
             // Rutas para la gestión de vehículos
             Route::get('vehiculos', [VehiculosController::class, 'index'])
                 ->name('vehiculos.index');

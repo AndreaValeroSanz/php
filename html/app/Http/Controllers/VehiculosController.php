@@ -37,7 +37,7 @@ class VehiculosController extends Controller
         ]);
 
         Vehiculo::create([
-            'Descripción'     => $request->descripcion,
+            'descripcion'     => $request->descripcion,
             'email_conductor' => $request->email_conductor,
             'password'        => $request->password, // Puedes encriptarlo si quieres
         ]);
@@ -71,7 +71,7 @@ class VehiculosController extends Controller
         ]);
 
         $vehiculo->update([
-            'Descripción'     => $request->descripcion,
+            'descripcion'     => $request->descripcion,
             'email_conductor' => $request->email_conductor,
             'password'        => $request->password,
         ]);

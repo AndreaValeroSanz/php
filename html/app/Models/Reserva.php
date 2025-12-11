@@ -66,9 +66,9 @@ class Reserva extends Model
     }
 
     public function vehiculo()
-{
-    return $this->belongsTo(\App\Models\Vehiculo::class, 'id_vehiculo', 'id_vehiculo');
-}
+    {
+        return $this->belongsTo(\App\Models\Vehiculo::class, 'id_vehiculo', 'id_vehiculo');
+    }
 
 //Descriptores para mostrar tipo de traslado en lugar de ID's
 public function getTipoTrasladoNombreAttribute()
