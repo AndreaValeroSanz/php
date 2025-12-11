@@ -43,17 +43,18 @@ class TransferController extends Controller
 
         $user = Auth::user();
         $minDate = Carbon::now()->addHours(48)->format('Y-m-d H:i');
-        $hotels = Hotel::all();
+        $hotels = Hotel::where('activo', 1)->get();
         $vehiculos = collect([]);
 
         if ($hotels->count() > 0) {
             $vehiculos = Precio::where('transfer_precios.id_hotel', $hotels[0]->id_hotel)
     ->join('transfer_vehiculos', 'transfer_precios.id_vehiculo', '=', 'transfer_vehiculos.id_vehiculo')
+    ->where('transfer_vehiculos.activo', 1)
     ->select([
-    'transfer_vehiculos.id_vehiculo',
-    'transfer_vehiculos.descripcion',
-    'transfer_precios.Precio'
-])
+        'transfer_vehiculos.id_vehiculo',
+        'transfer_vehiculos.descripcion',
+        'transfer_precios.Precio'
+    ])
     ->get();
     // Si quien crea la reserva es un admin o un hotel,
 // necesitamos lista de viajeros para asignar la reserva.
