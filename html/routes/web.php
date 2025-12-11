@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VehiculosController;
 use App\Http\Controllers\LandingController;
+use Illuminate\Support\Facades\Http;
 
 // =====================================================================
 // 1. RUTAS PÚBLICAS Y DE AUTENTICACIÓN
@@ -124,6 +125,39 @@ Route::middleware(['auth:admin,corporate,web'])->group(function () {
 
             Route::put('vehiculos/{id}/enable', [VehiculosController::class, 'enable'])
                 ->name('vehiculos.enable');   
+            
+                //Obtener JSON con info zonas
+            Route::get('/descargar-json-zonas', function () {
+
+    // Obtener total general
+    $total = \DB::table('transfer_reservas')->count();
+
+    // Obtener datos agrupados
+    $zonas = \DB::table('transfer_zonas AS z')
+        ->leftJoin('transfer_hoteles AS h', 'h.id_zona', '=', 'z.id_zona')
+        ->leftJoin('transfer_reservas AS r', 'r.id_hotel', '=', 'h.id_hotel')
+        ->selectRaw('z.descripcion AS zona, COUNT(r.id_reserva) AS num_traslados')
+        ->groupBy('z.descripcion')
+        ->get()
+        ->map(function ($item) use ($total) {
+            $item->porcentaje = $total > 0 
+                ? round(($item->num_traslados / $total) * 100, 2)
+                : 0;
+            return $item;
+        });
+
+    $json = json_encode([
+        'total_traslados' => $total,
+        'resumen_por_zona' => $zonas
+    ], JSON_PRETTY_PRINT);
+
+    return response($json)
+        ->header('Content-Type', 'text/plain')
+        ->header('Content-Disposition', 'attachment; filename="resumen_zonas.txt"');
+    
+})->name('descargarJsonZonas');
+
+    
             
 // ---------------------------------------------------------------
 // 3.D.2) ADMIN → GESTIÓN DE HOTELES

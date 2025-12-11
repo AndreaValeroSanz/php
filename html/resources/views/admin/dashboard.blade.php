@@ -45,8 +45,85 @@
                             <p class="mb-0 fw-bold">Usuarios Totales</p>
                         </div>
                     </div>
-                </div>
+<hr>
 
+<h5 class="text-danger mb-3">
+    <i class="fas fa-chart-pie"></i> Resumen por Zona
+</h5>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover shadow-sm">
+                <thead class="table-danger">
+                    <tr>
+                        <th>Zona</th>
+                        <th class="text-center">Traslados</th>
+                        <th class="text-center">% del Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($zonas as $z)
+                        <tr>
+                            <td>{{ $z->zona }}</td>
+                            <td class="text-center">{{ $z->num_traslados }}</td>
+                            <td class="text-center">{{ $z->porcentaje }}%</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        {{-- BOTÓN PARA VER JSON --}}
+<a href="{{ url('/api/resumen-zonas') }}" target="_blank" class="btn btn-outline-danger mt-2 me-2">
+    <i class="fas fa-file-code"></i> Ver JSON
+</a>
+
+{{-- BOTÓN PARA DESCARGAR JSON EN .TXT --}}
+<a href="{{ route('admin.descargarJsonZonas') }}" class="btn btn-danger mt-2">
+    <i class="fas fa-download"></i> Descargar JSON
+</a>
+
+    </div>
+    <div class="col-md-5 d-flex justify-content-center align-items-center">
+        <div style="width: 100%; max-width: 260px;">
+            <canvas id="chartZonas"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const ctx = document.getElementById('chartZonas');
+
+new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: {!! json_encode($zonas->pluck('zona')) !!},
+        datasets: [{
+            data: {!! json_encode($zonas->pluck('num_traslados')) !!},
+            backgroundColor: [
+                '#dc3545', '#0d6efd', '#198754', '#ffc107',
+                '#6610f2', '#fd7e14', '#20c997', '#6c757d'
+            ],
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+
+                </div>
+<hr>
                 <div class="row">
                     {{-- 2. NUEVA SECCIÓN: CREAR RESERVAS (Requerimiento) --}}
                     <div class="col-md-6 mb-3">
