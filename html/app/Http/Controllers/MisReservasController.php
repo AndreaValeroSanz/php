@@ -14,30 +14,52 @@ class MisReservasController extends Controller
      * Mostrar la lista de reservas según el rol del usuario.
      */
     public function index()
-    {
-        $user = Auth::guard('admin')->user()
-              ?? Auth::guard('corporate')->user()
-              ?? Auth::guard('web')->user();
+{
+    // Usuario logueado
+    // Detectar correctamente el rol y usuario ACTIVO
+if (Auth::guard('admin')->check()) {
+    $rol = 'admin';
+    $user = Auth::guard('admin')->user();
+}
+elseif (Auth::guard('corporate')->check()) {
+    $rol = 'hotel';
+    $user = Auth::guard('corporate')->user();
+}
+elseif (Auth::guard('web')->check()) {
+    $rol = 'user';
+    $user = Auth::guard('web')->user();
+} else {
+    abort(403, 'No autenticado');
+}
 
-        $rol = Auth::guard('admin')->check() ? 'admin' :
-               (Auth::guard('corporate')->check() ? 'hotel' : 'user');
-
-       if ($rol == 'admin') {
-            $reservas = Reserva::with(['hotel', 'owner', 'zona'])->get();
-        } elseif ($rol == 'hotel') {
-            $reservas = Reserva::with(['hotel', 'owner', 'zona'])
-                            ->where('id_hotel', $user->id_hotel)
-                            ->get();
-        } else {
-            $reservas = Reserva::with(['hotel', 'owner', 'zona'])
-                            ->where('id_owner', $user->id_viajero)
-                            ->get();
-        }
-
-        $now = Carbon::now();
-
-        return view('mis_reservas.mis_reservas', compact('reservas', 'rol', 'now'));
+    // ADMIN
+    if ($rol == 'admin') {
+        $reservas = Reserva::with(['hotel', 'owner', 'zona'])->get();
     }
+
+    // HOTEL
+    elseif ($rol == 'hotel') {
+
+        $hotel_id = $user->id_hotel;
+
+        $reservas = Reserva::with(['hotel', 'owner', 'zona'])
+            ->where('id_hotel', $hotel_id)
+            ->get();
+    }
+
+    // USER
+    else {
+
+        $reservas = Reserva::with(['hotel', 'owner', 'zona'])
+            ->where('tipo_owner', 'user')
+            ->where('id_owner', $user->id_viajero)
+            ->get();
+    }
+
+    $now = Carbon::now();
+
+    return view('mis_reservas.mis_reservas', compact('reservas', 'rol', 'now'));
+}
 
     /**
      * Mostrar formulario para editar una reserva.
