@@ -19,6 +19,11 @@ class Vehiculo extends Model
         'password',
     ];
 
+    public function getDescripcionAttribute() //Función para acceder al atributo descripción sin tilde
+    {
+        return $this->attributes['descripcion'] ?? null;
+    }
+
     public function reservas()
 {
     return $this->hasMany(\App\Models\Reserva::class, 'id_vehiculo', 'id_vehiculo');

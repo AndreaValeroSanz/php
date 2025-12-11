@@ -67,9 +67,9 @@ class Reserva extends Model
     }
 
     public function vehiculo()
-{
-    return $this->belongsTo(\App\Models\Vehiculo::class, 'id_vehiculo', 'id_vehiculo');
-}
+    {
+        return $this->belongsTo(\App\Models\Vehiculo::class, 'id_vehiculo', 'id_vehiculo');
+    }
 
 public function fechaLimite()
 {
