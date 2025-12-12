@@ -33,29 +33,47 @@ elseif (Auth::guard('web')->check()) {
     abort(403, 'No autenticado');
 }
 
-    // ADMIN
-    if ($rol == 'admin') {
-        $reservas = Reserva::with(['hotel', 'owner', 'zona', 'vehiculo'])->get();
-    }
+   // ADMIN
+if ($rol == 'admin') {
+    $reservas = Reserva::with(['hotel', 'owner', 'zona', 'vehiculo'])
+    ->orderByRaw("
+        CASE 
+            WHEN id_tipo_reserva = 1 THEN fecha_entrada
+            WHEN id_tipo_reserva = 2 THEN fecha_vuelo_salida
+            WHEN id_tipo_reserva = 3 THEN fecha_entrada
+        END DESC
+    ")
+    ->paginate(8);
+}
 
-    // HOTEL
-    elseif ($rol == 'hotel') {
+// HOTEL
+elseif ($rol == 'hotel') {
+    $reservas = Reserva::with(['hotel', 'owner', 'zona', 'vehiculo'])
+    ->where('id_hotel', $user->id_hotel)
+    ->orderByRaw("
+        CASE 
+            WHEN id_tipo_reserva = 1 THEN fecha_entrada
+            WHEN id_tipo_reserva = 2 THEN fecha_vuelo_salida
+            WHEN id_tipo_reserva = 3 THEN fecha_entrada
+        END DESC
+    ")
+    ->paginate(8);
+}
 
-        $hotel_id = $user->id_hotel;
-
-        $reservas = Reserva::with(['hotel', 'owner', 'zona'])
-            ->where('id_hotel', $hotel_id)
-            ->get();
-    }
-
-    // USER
-    else {
-
-        $reservas = Reserva::with(['hotel', 'owner', 'zona'])
-            ->where('tipo_owner', 'user')
-            ->where('id_owner', $user->id_viajero)
-            ->get();
-    }
+// USER
+else {
+    $reservas = Reserva::with(['hotel', 'owner', 'zona', 'vehiculo'])
+    ->where('tipo_owner', 'user')
+    ->where('id_owner', $user->id_viajero)
+    ->orderByRaw("
+        CASE 
+            WHEN id_tipo_reserva = 1 THEN fecha_entrada
+            WHEN id_tipo_reserva = 2 THEN fecha_vuelo_salida
+            WHEN id_tipo_reserva = 3 THEN fecha_entrada
+        END DESC
+    ")
+    ->paginate(8);
+}
 
     $now = Carbon::now();
 
@@ -76,14 +94,10 @@ $vehiculos = Vehiculo::where('activo', 1)->get();
             $rol = Auth::guard('admin')->check() ? 'admin' :
                 (Auth::guard('corporate')->check() ? 'hotel' : 'user');
 
-            $now = Carbon::now();
-           $reserva_fecha = $reserva->fechaLimite();
-$puede_modificar = $rol == 'admin' || $now->diffInHours($reserva_fecha, false) > 48;
-
-            if (!$puede_modificar) {
-                return redirect()->route('mis_reservas')
-                                ->with('error', 'No se puede modificar esta reserva a menos de 48 horas.');
-            }
+            if (!$reserva->puedeSerModificadaPor($rol)) {
+    return redirect()->route('mis_reservas')
+        ->with('error', 'No se puede modificar esta reserva.');
+}
 
             $hotels = Hotel::all();
 
@@ -113,14 +127,10 @@ $puede_modificar = $rol == 'admin' || $now->diffInHours($reserva_fecha, false) >
         $rol = Auth::guard('admin')->check() ? 'admin' :
             (Auth::guard('corporate')->check() ? 'hotel' : 'user');
 
-        $now = Carbon::now();
-        $reserva_fecha = Carbon::parse($reserva->fecha_reserva);
-        $puede_modificar = $rol == 'admin' || $reserva_fecha->diffInHours($now, false) > 48;
-
-        if (!$puede_modificar) {
-            return redirect()->route('mis_reservas')
-                            ->with('error', 'No se puede modificar esta reserva a menos de 48 horas.');
-        }
+        if (!$reserva->puedeSerModificadaPor($rol)) {
+    return redirect()->route('mis_reservas')
+        ->with('error', 'No se puede modificar esta reserva.');
+}
 
         // Mapear reservation_type de formulario a id_tipo_reserva
         $map = [
@@ -168,14 +178,10 @@ $reserva->id_vehiculo = $request->input('id_vehiculo', $reserva->id_vehiculo);
         $rol = Auth::guard('admin')->check() ? 'admin' :
                (Auth::guard('corporate')->check() ? 'hotel' : 'user');
 
-        $now = Carbon::now();
-        $reserva_fecha = Carbon::parse($reserva->fecha_reserva);
-        $puede_modificar = $rol == 'admin' || $reserva_fecha->diffInHours($now, false) > 48;
-
-        if (!$puede_modificar) {
-            return redirect()->route('mis_reservas')
-                             ->with('error', 'No se puede eliminar esta reserva a menos de 48 horas.');
-        }
+        if (!$reserva->puedeSerModificadaPor($rol)) {
+    return redirect()->route('mis_reservas')
+        ->with('error', 'No se puede eliminar esta reserva.');
+}
 
         $reserva->estado = 'anulada';
 $reserva->save();

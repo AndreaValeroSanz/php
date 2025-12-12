@@ -157,7 +157,7 @@
                                    class="form-control @error('fecha_llegada') is-invalid @enderror"
                                    id="fecha_llegada"
                                     name="fecha_llegada"
-       @if($minDate) min="{{ \Carbon\Carbon::parse($minDate)->format('Y-m-d') }}" @endif
+       min="{{ $minDate }}"
                                    required>
                             @error('fecha_llegada')
                                 <div class="invalid-feedback">{{ $message }}</div>

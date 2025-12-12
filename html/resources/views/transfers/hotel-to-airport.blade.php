@@ -162,7 +162,7 @@
                                    class="form-control @error('fecha_vuelo_salida') is-invalid @enderror"
                                    id="fecha_vuelo_salida"
                                    name="fecha_vuelo_salida"
-       @if($minDate) min="{{ \Carbon\Carbon::parse($minDate)->format('Y-m-d') }}" @endif
+      min="{{ $minDate }}"
                                    required>
                             @error('fecha_vuelo_salida')
                                 <div class="invalid-feedback">{{ $message }}</div>
