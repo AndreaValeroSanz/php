@@ -129,80 +129,151 @@
 
         <div class="collapse navbar-collapse" id="mainNavbar">
 
-            {{-- Links centrados --}}
-            <ul class="navbar-nav mx-auto gap-lg-3">
+        {{-- Links centrados --}}
+        <ul class="navbar-nav mx-auto gap-lg-3">
 
+            {{-- ADMIN --}}
+            @if ($isAdmin)
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
+                    href="{{ route('admin.dashboard') }}">
+                        Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('admin.vehiculos.*') ? 'active' : '' }}"
+                    href="{{ route('admin.vehiculos.index') }}">
+                        Vehículos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('transfer.select-type') ? 'active' : '' }}"
+                    href="{{ route('transfer.select-type') }}">
+                        Traslados
+                    </a>
+                </li>
+
+            {{-- HOTEL (corporate) --}}
+            @elseif ($isCorporate)
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('corporate.dashboard') ? 'active' : '' }}"
+                    href="{{ route('corporate.dashboard') }}">
+                        Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('transfer.select-type') ? 'active' : '' }}"
+                    href="{{ route('transfer.select-type') }}">
+                        Traslados
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('corporate.comissions') ? 'active' : '' }}"
+                    href="{{ route('corporate.comissions') }}">
+                        Comisiones
+                    </a>
+                </li>
+
+            {{-- VIAJERO (web) --}}
+            @elseif ($isTraveler)
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('user.dashboard') ? 'active' : '' }}"
+                    href="{{ route('user.dashboard') }}">
+                        Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('mis_reservas') ? 'active' : '' }}"
+                    href="{{ route('mis_reservas') }}">
+                        Mis reservas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('transfer.select-type') ? 'active' : '' }}"
+                    href="{{ route('transfer.select-type') }}">
+                        Traslados
+                    </a>
+                </li>
+
+            {{-- VISITANTE --}}
+            @else
                 <li class="nav-item">
                     <a class="nav-link text-white {{ request()->is('/') ? 'active' : '' }}"
                     href="{{ route('home') }}#hero" data-scroll="true">
                         Inicio
                     </a>
                 </li>
-
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->is('/') ? 'active' : '' }}"
+                    <a class="nav-link text-white"
                     href="{{ route('home') }}#fleet" data-scroll="true">
                         Vehículos
                     </a>
                 </li>
-
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->routeIs('login') ? 'active' : '' }}"
-                    href="{{ route('login') }}">
+                    <a class="nav-link text-white"
+                    href="{{ route('home') }}#transfers" data-scroll="true">
                         Traslados
                     </a>
                 </li>
+                {{-- <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('transfer.select-type') ? 'active' : '' }}"
+                    href="{{ route('transfer.select-type') }}">
+                        Traslados
+                    </a>
+                </li> --}}
+            @endif
 
-            </ul>
+</ul>
 
-            {{-- Botones derecha --}}
-            <div class="d-flex gap-2">
+
+    {{-- Botones derecha --}}
+        <div class="d-flex gap-2">
 
     {{-- Si NO estás logueado --}}
-    @if (!$isAdmin && !$isCorporate && !$isTraveler)
-        <a href="{{ route('login') }}" class="btn btn-sm btn-outline-light">
-            Login
-        </a>
-        <a href="{{ route('register') }}" class="btn btn-sm"
-           style="background:#facc6b; color:#0f766e; font-weight:600;">
-            Registro
-        </a>
-    @endif
+            @if (!$isAdmin && !$isCorporate && !$isTraveler)
+                <a href="{{ route('login') }}" class="btn btn-sm btn-outline-light">
+                    Login
+                </a>
+                <a href="{{ route('register') }}" class="btn btn-sm"
+                style="background:#facc6b; color:#0f766e; font-weight:600;">
+                    Registro
+                </a>
+            @endif
 
-    {{-- Si eres ADMIN --}}
-    @if ($isAdmin)
-        <a href="{{ route('admin.dashboard') }}" class="btn btn-sm btn-light">
-            Panel Admin
-        </a>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button class="btn btn-sm btn-danger">Salir</button>
-        </form>
-    @endif
+            {{-- Si eres ADMIN --}}
+            @if ($isAdmin)
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-sm btn-light">
+                    Panel Admin
+                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="btn btn-sm btn-danger">Salir</button>
+                </form>
+            @endif
 
-    {{-- Si eres HOTEL --}}
-    @if ($isCorporate)
-        <a href="{{ route('corporate.dashboard') }}" class="btn btn-sm btn-light">
-            Panel Hotel
-        </a>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button class="btn btn-sm btn-danger">Salir</button>
-        </form>
-    @endif
+            {{-- Si eres HOTEL --}}
+            @if ($isCorporate)
+                <a href="{{ route('corporate.dashboard') }}" class="btn btn-sm btn-light">
+                    Panel Hotel
+                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="btn btn-sm btn-danger">Salir</button>
+                </form>
+            @endif
 
-    {{-- Si eres VIAJERO --}}
-    @if ($isTraveler)
-        <a href="{{ route('user.dashboard') }}" class="btn btn-sm btn-light">
-            Mi Cuenta
-        </a>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button class="btn btn-sm btn-danger">Salir</button>
-        </form>
-    @endif
+            {{-- Si eres VIAJERO --}}
+            @if ($isTraveler)
+                <a href="{{ route('user.dashboard') }}" class="btn btn-sm btn-light">
+                    Mi Cuenta
+                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="btn btn-sm btn-danger">Salir</button>
+                </form>
+            @endif
 
-</div>
+        </div>
 
         </div>
     </div>
