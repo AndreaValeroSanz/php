@@ -17,6 +17,40 @@
         padding: 1.75rem 2rem;
         text-align: center;
     }
+    .btn-confirm,
+.btn-cancel {
+    border-radius: .75rem;
+    font-weight: 700;
+    padding: .75rem 2.25rem;
+    font-size: 0.95rem;
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-confirm {
+    background-color: #0f766e;
+    border: 1px solid #0f766e;
+    color: #ffffff;
+}
+
+.btn-confirm:hover {
+    background-color: #0d9488;
+    border-color: #0d9488;
+    color: #ffffff;
+}
+
+.btn-cancel {
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+}
+
+.btn-cancel:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
 </style>
 
 <div class="dashboard-container">
@@ -49,13 +83,13 @@
                 <hr class="my-5">
 
                 <div class="d-flex justify-content-center gap-3">
-                    <a href="{{ route('transfer.select-type') }}" class="btn btn-confirm">
-                        Nueva Reserva
-                    </a>
-                    <a href="#" class="btn btn-cancel">
-                        Ver Mi Calendario
-                    </a>
-                </div>
+    <a href="{{ route('transfer.select-type') }}" class="btn btn-confirm">
+        Nueva Reserva
+    </a>
+    <a href="{{ route('calendar.index') }}" class="btn btn-cancel">
+        Ver Mi Calendario
+    </a>
+</div>
             </div>
 
         </div>
