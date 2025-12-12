@@ -37,7 +37,7 @@
     border-spacing: 0;
 }
 
-/* ===== CABECERAS ===== */
+/* CABECERAS  */
 .custom-table thead th {
     background-color: #f1f5f9;
     color: #475569;
@@ -51,7 +51,7 @@
     vertical-align: middle;
 }
 
-/* ===== CELDAS ===== */
+/*  CELDAS */
 .custom-table tbody td {
     padding: 0.6rem 0.75rem;
     vertical-align: middle;
@@ -136,6 +136,40 @@
     font-weight: 700;
     color: #0f766e;
 }
+
+/* PAGINACIÓN  */
+
+.pagination {
+    gap: 0.35rem;
+}
+
+.page-item .page-link {
+    border: none;
+    border-radius: 8px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #0f766e;
+    background-color: #f1f5f9;
+    transition: all 0.15s ease;
+}
+
+.page-item .page-link:hover {
+    background-color: #ccfbf1;
+    color: #0f766e;
+}
+
+.page-item.active .page-link {
+    background-color: #0f766e;
+    color: white;
+}
+
+.page-item.disabled .page-link {
+    background-color: transparent;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
 </style>
 
 <div class="dashboard-wrapper">
