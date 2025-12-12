@@ -117,12 +117,12 @@
                             <th>Tipo</th>
                             <th>Vehículo</th>
                             <th>Hotel</th>
-                            <th>Destino / Zona</th>
-                            <th>Fecha Entrada</th>
-                            <th class="text-center">Pax</th>
-                            <th class="text-end">Precio</th>
-                            <th class="text-end">Comisión</th>
-                            <th class="text-center">Acciones</th>
+                            <th>Zona</th>
+                            <th>Fecha Traslado</th>
+                            <th>Pasajeros</th>
+                            <th>Precio Total</th>
+                            <th>Comisión</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>

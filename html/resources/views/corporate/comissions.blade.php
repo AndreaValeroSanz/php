@@ -5,7 +5,7 @@
     <div class="col-md-10">
         <div class="card shadow-lg">
             <div class="card-header bg-primary text-white">
-                <h4>Comisiones de {{ Auth::guard('corporate')->user()->hotel?->nombre ?? 'Hotel desconocido' }}
+                <h4>Comisiones de su Hotel
                     ({{ date('F Y', mktime(0, 0, 0, $month, 1, $year)) }})
                 </h4>
             </div>
