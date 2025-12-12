@@ -107,10 +107,12 @@
                         </div>
                     @enderror
 
-                    <div class="alert alert-warning small mb-0">
-                        Reserva mínima con <strong>48h de antelación</strong>.
-                        Fecha mínima: <strong>{{ Carbon\Carbon::parse($minDate)->format('d/m/Y') }}</strong>
-                    </div>
+                    @if(!Auth::guard('admin')->check())
+    <div class="alert alert-warning small mb-0">
+        Reserva mínima con <strong>48h de antelación</strong>.
+        Fecha mínima: <strong>{{ \Carbon\Carbon::parse($minDate)->format('d/m/Y') }}</strong>
+    </div>
+@endif
                 </div>
 
                 {{-- DATOS DEL VUELO --}}
@@ -154,9 +156,8 @@
                             <input type="date"
                                    class="form-control @error('fecha_llegada') is-invalid @enderror"
                                    id="fecha_llegada"
-                                   name="fecha_llegada"
-                                   value="{{ old('fecha_llegada') }}"
-                                   min="{{ Carbon\Carbon::parse($minDate)->format('Y-m-d') }}"
+                                    name="fecha_llegada"
+       @if($minDate) min="{{ \Carbon\Carbon::parse($minDate)->format('Y-m-d') }}" @endif
                                    required>
                             @error('fecha_llegada')
                                 <div class="invalid-feedback">{{ $message }}</div>
