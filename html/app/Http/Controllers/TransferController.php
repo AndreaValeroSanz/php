@@ -144,6 +144,7 @@ class TransferController extends Controller
                 'origen_vuelo_salida'  => 'required|string',
                 'fecha_vuelo_salida'   => "required|date|after_or_equal:$minDate",
                 'hora_vuelo_salida'    => 'required',
+                'num_vuelo_salida'     => 'required|string',
                 'hora_recogida_vuelta' => 'required',
                 'id_hotel_recogida'    => 'required|integer',
             ];
