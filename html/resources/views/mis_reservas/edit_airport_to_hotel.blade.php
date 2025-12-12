@@ -124,10 +124,12 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Día de Llegada</label>
-                            <input type="date" class="form-control"
-                                   name="fecha_entrada"
-                                   value="{{ old('fecha_entrada', $reserva->fecha_entrada) }}"
-                                   required>
+                            <input type="date"
+       class="form-control"
+       name="fecha_entrada"
+       value="{{ old('fecha_entrada', $reserva->fecha_entrada) }}"
+       min="{{ $minDate }}"
+       required>
                         </div>
 
                         <div class="col-md-6 mb-3">

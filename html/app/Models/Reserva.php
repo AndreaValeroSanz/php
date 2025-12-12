@@ -161,4 +161,5 @@ public function puedeSerModificadaPor(string $rol): bool
     return now()->diffInHours($fechaTraslado, false) > 48;
 }
 
+
 }

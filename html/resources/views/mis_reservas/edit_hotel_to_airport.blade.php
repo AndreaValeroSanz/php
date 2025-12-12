@@ -124,10 +124,12 @@
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Día del Vuelo</label>
-                            <input type="date" class="form-control"
-                                   name="fecha_vuelo_salida"
-                                   value="{{ old('fecha_vuelo_salida', $reserva->fecha_vuelo_salida) }}"
-                                   required>
+                            <input type="date"
+       class="form-control"
+       name="fecha_vuelo_salida"
+       value="{{ old('fecha_vuelo_salida', $reserva->fecha_vuelo_salida) }}"
+       min="{{ $minDate }}"
+       required>
                         </div>
 
                         <div class="col-md-6 mb-3">

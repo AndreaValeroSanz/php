@@ -106,8 +106,9 @@
         <label class="form-label">Día de Llegada</label>
         <input type="date" class="form-control"
                name="fecha_entrada"
-               value="{{ old('fecha_entrada', $reserva->fecha_entrada) }}"
-               required>
+       min="{{ $minDate }}"
+       value="{{ old('fecha_entrada', $reserva->fecha_entrada) }}"
+       required>
     </div>
 
     <div class="col-md-4 mb-3">
@@ -158,9 +159,10 @@
     <div class="col-md-6 mb-3">
         <label class="form-label">Día de Salida</label>
         <input type="date" class="form-control"
-               name="fecha_vuelo_salida"
-               value="{{ old('fecha_vuelo_salida', $reserva->fecha_vuelo_salida) }}"
-               required>
+              name="fecha_vuelo_salida"
+       min="{{ $minDate }}"
+       value="{{ old('fecha_vuelo_salida', $reserva->fecha_vuelo_salida) }}"
+       required>
     </div>
 
     <div class="col-md-6 mb-3">
@@ -177,6 +179,9 @@
                name="hora_recogida_hotel"
                value="{{ old('hora_recogida_hotel', $reserva->hora_recogida_hotel) }}"
                required>
+               <small class="text-muted">
+        Recomendado: 3–4 horas antes del vuelo.
+    </small>
     </div>
 
     {{-- HOTEL RECOGIDA (SINCRONIZADO) --}}
