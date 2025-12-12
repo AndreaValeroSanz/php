@@ -27,7 +27,7 @@
 
                 <div class="d-grid gap-2 d-md-block">
                     <a href="{{ route('transfer.select-type') }}" class="btn btn-primary btn-lg"><i class="fas fa-plus-circle"></i> Nueva Reserva</a>
-                    <a href="#" class="btn btn-secondary btn-lg"><i class="fas fa-calendar-alt"></i> Ver Mi Calendario</a>
+                    <a href="{{ route('calendar.index') }}" class="btn btn-secondary btn-lg"><i class="fas fa-calendar-alt"></i> Ver Mi Calendario</a>
                 </div>
             </div>
         </div>
