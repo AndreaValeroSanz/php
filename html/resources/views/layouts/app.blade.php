@@ -140,6 +140,8 @@
                         Inicio
                     </a>
                 </li>
+
+
                 <li class="nav-item">
                     <a class="nav-link text-white {{ request()->routeIs('admin.vehiculos.*') ? 'active' : '' }}"
                     href="{{ route('admin.vehiculos.index') }}">
@@ -147,8 +149,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->routeIs('transfer.select-type') ? 'active' : '' }}"
-                    href="{{ route('transfer.select-type') }}">
+                    <a class="nav-link text-white {{ request()->routeIs('admin.reservations.list') ? 'active' : '' }}"
+                    href="{{ route('admin.reservations.list') }}">
                         Traslados
                     </a>
                 </li>
@@ -205,16 +207,17 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white"
-                    href="{{ route('home') }}#fleet" data-scroll="true">
-                        Vehículos
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white"
                     href="{{ route('home') }}#transfers" data-scroll="true">
                         Traslados
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white"
+                    href="{{ route('home') }}#fleet" data-scroll="true">
+                        Vehículos
+                    </a>
+                </li>
+
                 {{-- <li class="nav-item">
                     <a class="nav-link text-white {{ request()->routeIs('transfer.select-type') ? 'active' : '' }}"
                     href="{{ route('transfer.select-type') }}">
