@@ -10,15 +10,20 @@ use App\Http\Controllers\CorporateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VehiculosController;
+use App\Http\Controllers\LandingController;
+use Illuminate\Support\Facades\Http;
 
 // =====================================================================
 // 1. RUTAS PÚBLICAS Y DE AUTENTICACIÓN
 // =====================================================================
 
 // Home
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+// Route::get('/', function () {
+//     return view('home');
+// })->name('home');
+
+// Landing
+Route::get('/', [LandingController::class, 'index'])->name('home');
 
 // Login
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -52,7 +57,7 @@ Route::prefix('transfer')->group(function () {
 // =====================================================================
 // 3. RUTAS PROTEGIDAS (requieren login con cualquier rol)
 // =====================================================================
-Route::middleware(['auth:admin,corporate,web'])->group(function () {
+Route::middleware(['auth:admin,corporate,web', 'clear-others'])->group(function () {
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -99,6 +104,9 @@ Route::middleware(['auth:admin,corporate,web'])->group(function () {
             Route::get('/commissions', [AdminController::class, 'showCommissions'])
                 ->name('commissions');
 
+            Route::get('/reserva/{id}', [AdminController::class, 'showReservationDetail'])
+                ->name('reserva.detalle');
+
             // Rutas para la gestión de vehículos
             Route::get('vehiculos', [VehiculosController::class, 'index'])
                 ->name('vehiculos.index');
@@ -115,9 +123,44 @@ Route::middleware(['auth:admin,corporate,web'])->group(function () {
             Route::put('vehiculos/{id}', [VehiculosController::class, 'update'])
                 ->name('vehiculos.update');
 
-            Route::delete('vehiculos/{id}', [VehiculosController::class, 'destroy'])
-                ->name('vehiculos.destroy');
+            Route::put('vehiculos/{id}/disable', [VehiculosController::class, 'disable'])
+                ->name('vehiculos.disable');
+
+            Route::put('vehiculos/{id}/enable', [VehiculosController::class, 'enable'])
+                ->name('vehiculos.enable');   
             
+                //Obtener JSON con info zonas
+            Route::get('/descargar-json-zonas', function () {
+
+    // Obtener total general
+    $total = \DB::table('transfer_reservas')->count();
+
+    // Obtener datos agrupados
+    $zonas = \DB::table('transfer_zonas AS z')
+        ->leftJoin('transfer_hoteles AS h', 'h.id_zona', '=', 'z.id_zona')
+        ->leftJoin('transfer_reservas AS r', 'r.id_hotel', '=', 'h.id_hotel')
+        ->selectRaw('z.descripcion AS zona, COUNT(r.id_reserva) AS num_traslados')
+        ->groupBy('z.descripcion')
+        ->get()
+        ->map(function ($item) use ($total) {
+            $item->porcentaje = $total > 0 
+                ? round(($item->num_traslados / $total) * 100, 2)
+                : 0;
+            return $item;
+        });
+
+    $json = json_encode([
+        'total_traslados' => $total,
+        'resumen_por_zona' => $zonas
+    ], JSON_PRETTY_PRINT);
+
+    return response($json)
+        ->header('Content-Type', 'text/plain')
+        ->header('Content-Disposition', 'attachment; filename="resumen_zonas.txt"');
+    
+})->name('descargarJsonZonas');
+
+    
             
 // ---------------------------------------------------------------
 // 3.D.2) ADMIN → GESTIÓN DE HOTELES

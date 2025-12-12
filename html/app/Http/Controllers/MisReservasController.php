@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\Reserva;
-use App\Models\Hotel; // Añadido para cargar hoteles en el form de edición
+use App\Models\Hotel;
+use App\Models\Vehiculo;
 
 class MisReservasController extends Controller
 {
@@ -14,30 +15,52 @@ class MisReservasController extends Controller
      * Mostrar la lista de reservas según el rol del usuario.
      */
     public function index()
-    {
-        $user = Auth::guard('admin')->user()
-              ?? Auth::guard('corporate')->user()
-              ?? Auth::guard('web')->user();
+{
+    // Usuario logueado
+    // Detectar correctamente el rol y usuario ACTIVO
+if (Auth::guard('admin')->check()) {
+    $rol = 'admin';
+    $user = Auth::guard('admin')->user();
+}
+elseif (Auth::guard('corporate')->check()) {
+    $rol = 'hotel';
+    $user = Auth::guard('corporate')->user();
+}
+elseif (Auth::guard('web')->check()) {
+    $rol = 'user';
+    $user = Auth::guard('web')->user();
+} else {
+    abort(403, 'No autenticado');
+}
 
-        $rol = Auth::guard('admin')->check() ? 'admin' :
-               (Auth::guard('corporate')->check() ? 'hotel' : 'user');
-
-       if ($rol == 'admin') {
-            $reservas = Reserva::with(['hotel', 'owner', 'zona'])->get();
-        } elseif ($rol == 'hotel') {
-            $reservas = Reserva::with(['hotel', 'owner', 'zona'])
-                            ->where('id_hotel', $user->id_hotel)
-                            ->get();
-        } else {
-            $reservas = Reserva::with(['hotel', 'owner', 'zona'])
-                            ->where('id_owner', $user->id_viajero)
-                            ->get();
-        }
-
-        $now = Carbon::now();
-
-        return view('mis_reservas.mis_reservas', compact('reservas', 'rol', 'now'));
+    // ADMIN
+    if ($rol == 'admin') {
+        $reservas = Reserva::with(['hotel', 'owner', 'zona', 'vehiculo'])->get();
     }
+
+    // HOTEL
+    elseif ($rol == 'hotel') {
+
+        $hotel_id = $user->id_hotel;
+
+        $reservas = Reserva::with(['hotel', 'owner', 'zona'])
+            ->where('id_hotel', $hotel_id)
+            ->get();
+    }
+
+    // USER
+    else {
+
+        $reservas = Reserva::with(['hotel', 'owner', 'zona'])
+            ->where('tipo_owner', 'user')
+            ->where('id_owner', $user->id_viajero)
+            ->get();
+    }
+
+    $now = Carbon::now();
+
+    return view('mis_reservas.mis_reservas', compact('reservas', 'rol', 'now'));
+}
 
     /**
      * Mostrar formulario para editar una reserva.
@@ -45,7 +68,7 @@ class MisReservasController extends Controller
    public function edit($id)
         {
             $reserva = Reserva::findOrFail($id);
-
+$vehiculos = Vehiculo::where('activo', 1)->get();
             $user = Auth::guard('admin')->user()
                 ?? Auth::guard('corporate')->user()
                 ?? Auth::guard('web')->user();
@@ -54,8 +77,8 @@ class MisReservasController extends Controller
                 (Auth::guard('corporate')->check() ? 'hotel' : 'user');
 
             $now = Carbon::now();
-            $reserva_fecha = Carbon::parse($reserva->fecha_reserva);
-            $puede_modificar = $rol == 'admin' || $reserva_fecha->diffInHours($now, false) > 48;
+           $reserva_fecha = $reserva->fechaLimite();
+$puede_modificar = $rol == 'admin' || $now->diffInHours($reserva_fecha, false) > 48;
 
             if (!$puede_modificar) {
                 return redirect()->route('mis_reservas')
@@ -73,7 +96,7 @@ class MisReservasController extends Controller
             $tipo = (int)$reserva->id_tipo_reserva; // ← AQUÍ estaba el error
             $vista = $map[$tipo] ?? abort(404, "Tipo de reserva desconocido");
 
-            return view("mis_reservas.$vista", compact('reserva', 'hotels'));
+            return view("mis_reservas.$vista", compact('reserva', 'hotels', 'vehiculos'));
         }
 
 /**
@@ -122,7 +145,7 @@ class MisReservasController extends Controller
         $reserva->numero_vuelo_salida  = $request->input('numero_vuelo_salida', $reserva->numero_vuelo_salida);
         $reserva->origen_vuelo_salida  = $request->input('origen_vuelo_salida', $reserva->origen_vuelo_salida);
         $reserva->hora_recogida_hotel  = $request->input('hora_recogida_hotel', $reserva->hora_recogida_hotel);
-
+$reserva->id_vehiculo = $request->input('id_vehiculo', $reserva->id_vehiculo);
         $reserva->save();
 
 
@@ -154,7 +177,8 @@ class MisReservasController extends Controller
                              ->with('error', 'No se puede eliminar esta reserva a menos de 48 horas.');
         }
 
-        $reserva->delete();
+        $reserva->estado = 'anulada';
+$reserva->save();
 
         return redirect()->route('mis_reservas')
                          ->with('success', 'Reserva eliminada correctamente.');

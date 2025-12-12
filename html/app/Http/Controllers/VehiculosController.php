@@ -37,7 +37,7 @@ class VehiculosController extends Controller
         ]);
 
         Vehiculo::create([
-            'Descripción'     => $request->descripcion,
+            'descripcion'     => $request->descripcion,
             'email_conductor' => $request->email_conductor,
             'password'        => $request->password, // Puedes encriptarlo si quieres
         ]);
@@ -71,7 +71,7 @@ class VehiculosController extends Controller
         ]);
 
         $vehiculo->update([
-            'Descripción'     => $request->descripcion,
+            'descripcion'     => $request->descripcion,
             'email_conductor' => $request->email_conductor,
             'password'        => $request->password,
         ]);
@@ -81,14 +81,24 @@ class VehiculosController extends Controller
     }
 
     /**
-     * Eliminar vehículo.
+     * Inhabilitar Vehiculos
      */
-    public function destroy($id)
+    public function disable($id)
     {
         $vehiculo = Vehiculo::findOrFail($id);
-        $vehiculo->delete();
+        $vehiculo->activo = 0;
+        $vehiculo->save();
 
-        return redirect()->route('admin.vehiculos.index')
-                         ->with('success', 'Vehículo eliminado correctamente.');
+        return back()->with('success', 'Vehículo inhabilitado correctamente.');
     }
+
+    public function enable($id)
+    {
+        $vehiculo = Vehiculo::findOrFail($id);
+        $vehiculo->activo = 1;
+        $vehiculo->save();
+
+        return back()->with('success', 'Vehículo habilitado correctamente.');
+    }
+
 }

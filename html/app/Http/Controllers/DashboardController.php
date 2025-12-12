@@ -27,8 +27,27 @@ $reservas = Reserva::all();
     'adminsTotales'   => $adminsTotales,   
 ];
 
+// Resumen por zonas para generar JSON
 
-        return view('admin.dashboard', compact('stats'));
+        $totalReservas = Reserva::count();
+
+    $zonas = \DB::table('transfer_zonas AS z')
+        ->leftJoin('transfer_hoteles AS h', 'h.id_zona', '=', 'z.id_zona')
+        ->leftJoin('transfer_reservas AS r', 'r.id_hotel', '=', 'h.id_hotel')
+        ->selectRaw('
+            z.descripcion AS zona,
+            COUNT(r.id_reserva) AS num_traslados
+        ')
+        ->groupBy('z.descripcion')
+        ->get()
+        ->map(function ($item) use ($totalReservas) {
+            $item->porcentaje = $totalReservas > 0 
+                ? round(($item->num_traslados / $totalReservas) * 100, 2)
+                : 0;
+            return $item;
+        });
+
+    return view('admin.dashboard', compact('stats', 'zonas'));
     }
 
     public function hotel()

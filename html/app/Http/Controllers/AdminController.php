@@ -90,6 +90,14 @@ class AdminController extends Controller
     }
 
     return $query->with(['vehiculo', 'hotel'])->get();
-}
+    }   
+
+    public function showReservationDetail($id)
+    {
+        $reserva = Reserva::with(['hotel', 'vehiculo', 'zona'])
+                        ->findOrFail($id);
+
+        return view('admin.reservation-detail', compact('reserva'));
+    }
 
 }

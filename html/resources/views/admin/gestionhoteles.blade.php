@@ -58,7 +58,7 @@
                                 <td>{{ $hotel->id_hotel }}</td>
                                 <td>{{ $hotel->nombre }}</td>
                                 <td>{{ $hotel->email_hotel }}</td>
-                                <td>{{ $hotel->id_zona }}</td>
+                                <td>{{ $hotel->zona->descripcion ?? 'Sin zona' }}</td>
                                 <td>{{ $hotel->Comision }}%</td>
                                 <td>
                                     @if($hotel->activo)
