@@ -28,6 +28,17 @@
                     <h5 class="mb-3 text-secondary"><i class="fas fa-plane-departure"></i> Datos del Vuelo </h5>
                     <div class="row">
                         <div class="col-md-6 mb-3">
+    <label for="origen_vuelo_salida" class="form-label">Aeropuerto de Destino</label>
+    <input type="text"
+           class="form-control @error('origen_vuelo_salida') is-invalid @enderror"
+           id="origen_vuelo_salida"
+           name="origen_vuelo_salida"
+           placeholder="Ej: Madrid (MAD)"
+           value="{{ old('origen_vuelo_salida') }}"
+           required>
+    @error('origen_vuelo_salida')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
                             <label for="fecha_vuelo_salida" class="form-label">Día del Vuelo</label>
                             <input type="date" class="form-control @error('fecha_vuelo_salida') is-invalid @enderror" 
                                    id="fecha_vuelo_salida" name="fecha_vuelo_salida" 
@@ -82,13 +93,18 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="hora_recogida" class="form-label">Hora de Recogida Estimada</label>
-                            <input type="time" class="form-control @error('hora_recogida') is-invalid @enderror" 
-                                   id="hora_recogida" name="hora_recogida" 
-                                   value="{{ old('hora_recogida') }}" required>
-                            <small class="text-muted">Recomendado: 3-4 horas antes del vuelo.</small>
-                            @error('hora_recogida')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
+    <label for="hora_recogida" class="form-label">Hora de Recogida Estimada</label>
+    <input type="time"
+           class="form-control @error('hora_recogida') is-invalid @enderror"
+           id="hora_recogida"
+           name="hora_recogida"
+           value="{{ old('hora_recogida') }}"
+           required>
+    <small class="text-muted">Recomendado: 3-4 horas antes del vuelo.</small>
+    @error('hora_recogida')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
                        {{-- Selector de Vehículo y Pasajeros --}}
 <h5 class="mt-4 mb-1 text-primary">
     <i class="fas fa-car"></i> Selecciona el Vehículo y los Pasajeros

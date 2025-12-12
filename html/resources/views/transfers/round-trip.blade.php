@@ -22,7 +22,19 @@
                     
                     {{-- SECCIÓN IDA --}}
                     <h4 class="mb-4 text-success"><i class="fas fa-road"></i> IDA: Aeropuerto → Hotel</h4>
-                    
+                    <div class="col-md-4 mb-3">
+    <label for="origen_vuelo_entrada" class="form-label">Aeropuerto de Origen</label>
+    <input type="text"
+           name="origen_vuelo_entrada"
+           id="origen_vuelo_entrada"
+           class="form-control @error('origen_vuelo_entrada') is-invalid @enderror"
+           placeholder="Ej: Madrid Barajas (MAD)"
+           value="{{ old('origen_vuelo_entrada') }}"
+           required>
+    @error('origen_vuelo_entrada')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="fecha_llegada" class="form-label">Día de Llegada</label>
@@ -68,15 +80,33 @@
 
                     {{-- SECCIÓN VUELTA --}}
                     <h4 class="mb-4 text-warning"><i class="fas fa-car-side"></i> VUELTA: Hotel → Aeropuerto</h4>
-                    
+                    <div class="col-md-6 mb-3">
+    <label for="origen_vuelo_salida" class="form-label">Aeropuerto de Destino</label>
+    <input type="text"
+           class="form-control"
+           id="origen_vuelo_salida"
+           name="origen_vuelo_salida"
+           placeholder="Ej: Barcelona - El Prat (BCN)"
+           value="{{ old('origen_vuelo_salida') }}"
+           required>
+</div>
+<div class="col-md-4 mb-3">
+    <label for="hora_vuelo_salida" class="form-label">Hora de Salida del Vuelo</label>
+    <input type="time"
+           class="form-control"
+           id="hora_vuelo_salida"
+           name="hora_vuelo_salida"
+           required>
+</div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="fecha_vuelo_salida" class="form-label">Día Salida</label>
                             <input type="date" class="form-control" id="fecha_vuelo_salida" name="fecha_vuelo_salida" value="{{ old('fecha_vuelo_salida') }}" min="{{ Carbon\Carbon::parse($minDate)->format('Y-m-d') }}" required>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
     <label for="hora_recogida_vuelta" class="form-label">Hora de Recogida</label>
-    <input type="time" class="form-control"
+    <input type="time"
+           class="form-control @error('hora_recogida_vuelta') is-invalid @enderror"
            id="hora_recogida_vuelta"
            name="hora_recogida_vuelta"
            value="{{ old('hora_recogida_vuelta') }}"
@@ -88,6 +118,7 @@
         <div class="invalid-feedback">{{ $message }}</div>
     @enderror
 </div>
+
                     </div>
 
                     {{-- HOTEL DE RECOGIDA --}}
