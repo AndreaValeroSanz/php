@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Reserva extends Model
 {
@@ -107,19 +108,16 @@ public function fechaLimite()
 
 public function getEstadoFinalAttribute()
 {
-    // Si está anulada en BD: siempre anulada
     if ($this->estado === 'anulada') {
         return 'Anulada';
     }
 
-    // Si ya ha pasado: finalizada
-    $fechaTraslado = $this->fecha_entrada ?? $this->fecha_vuelo_salida;
+    $fechaTraslado = $this->fechaLimite();
 
-    if ($fechaTraslado && \Carbon\Carbon::parse($fechaTraslado)->isPast()) {
+    if ($fechaTraslado && $fechaTraslado->isPast()) {
         return 'Finalizada';
     }
 
-    // Si aún no ha pasado: confirmada
     return 'Confirmada';
 }
 
@@ -134,5 +132,34 @@ public function getTipoTrasladoNombreAttribute()
         default => 'Desconocido'
     };
 }
+
+public function puedeSerModificadaPor(string $rol): bool
+{
+    // Si está anulada → nadie puede
+    if ($this->estado === 'anulada') {
+        return false;
+    }
+
+    $fechaTraslado = $this->fechaLimite();
+
+    // Si no hay fecha → por seguridad no permitir
+    if (!$fechaTraslado) {
+        return false;
+    }
+
+    // Si ya pasó → finalizada → nadie puede
+    if ($fechaTraslado->isPast()) {
+        return false;
+    }
+
+    // Admin siempre puede mientras no esté finalizada
+    if ($rol === 'admin') {
+        return true;
+    }
+
+    // Hotel y viajero → mínimo 48h antes
+    return now()->diffInHours($fechaTraslado, false) > 48;
+}
+
 
 }

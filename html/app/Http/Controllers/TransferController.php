@@ -42,9 +42,19 @@ class TransferController extends Controller
                 ->with('error', 'Tipo de reserva no válido.');
         }
 
-        $user    = Auth::user();
-        $minDate = Carbon::now()->addHours(48)->format('Y-m-d H:i');
-        $hotels  = Hotel::where('activo', 1)->get();
+        $user = Auth::user();
+
+// Solo los usuarios tipo viajeros y hoteles tienen restricción 48h para reservar
+$isAdmin = Auth::guard('admin')->check();
+
+// Admin: hoy | Hotel/Viajero: +48h
+$minDate = $isAdmin
+    ? Carbon::today()->format('Y-m-d')
+    : Carbon::now()->addHours(48)->format('Y-m-d');
+
+
+$hotels = Hotel::where('activo', 1)->get();
+
 
         $vehiculos = collect();
         if ($hotels->count() > 0) {
@@ -98,7 +108,13 @@ class TransferController extends Controller
             $rules['id_viajero'] = 'required|exists:transfer_viajeros,id_viajero';
         }
 
-        $minDate = Carbon::now()->addHours(48)->format('Y-m-d');
+        $isAdmin = Auth::guard('admin')->check();
+
+// Admin: hoy | Hotel y Viajero: +48h
+$minDate = $isAdmin
+    ? Carbon::today()->format('Y-m-d')
+    : Carbon::now()->addHours(48)->format('Y-m-d');
+
 
         // 🔧 NORMALIZACIÓN round_trip (hotel recogida = destino)
         if (
@@ -113,42 +129,47 @@ class TransferController extends Controller
 
         // VALIDACIONES POR TIPO
         if ($request->reservation_type === 'airport_to_hotel') {
-            $rules += [
-                'aeropuerto_origen' => 'required|string',
-                'fecha_llegada'     => "required|date|after_or_equal:$minDate",
-                'hora_llegada'      => 'required',
-                'num_vuelo'         => 'required|string',
-                'id_hotel_destino'  => 'required|integer',
-            ];
-        }
+    $rules += [
+        'aeropuerto_origen' => 'required|string',
+        'fecha_llegada'     => "required|date|after_or_equal:$minDate",
+        'hora_llegada'      => 'required',
+        'num_vuelo'         => 'required|string',
+        'id_hotel_destino'  => 'required|integer',
+    ];
+}
+
 
         if ($request->reservation_type === 'hotel_to_airport') {
-            $rules += [
-                'origen_vuelo_salida' => 'required|string',
-                'fecha_vuelo_salida'  => "required|date|after_or_equal:$minDate",
-                'hora_vuelo_salida'   => 'required',
-                'num_vuelo_salida'    => 'required|string',
-                'id_hotel_recogida'   => 'required|integer',
-                'hora_recogida'       => 'required',
-            ];
-        }
+    $rules += [
+        'origen_vuelo_salida' => 'required|string',
+        'fecha_vuelo_salida'  => "required|date|after_or_equal:$minDate",
+        'hora_vuelo_salida'   => 'required',
+        'num_vuelo_salida'    => 'required|string',
+        'id_hotel_recogida'   => 'required|integer',
+        'hora_recogida'       => 'required',
+    ];
+}
+
+
 
         if ($request->reservation_type === 'round_trip') {
-            $rules += [
-                'origen_vuelo_entrada' => 'required|string',
-                'fecha_llegada'        => "required|date|after_or_equal:$minDate",
-                'hora_llegada'         => 'required',
-                'num_vuelo_ida'        => 'required|string',
-                'id_hotel_destino'     => 'required|integer',
+    $rules += [
+        'origen_vuelo_entrada' => 'required|string',
+        'fecha_llegada'        => "required|date|after_or_equal:$minDate",
+        'hora_llegada'         => 'required',
+        'num_vuelo_ida'        => 'required|string',
+        'id_hotel_destino'     => 'required|integer',
 
-                'origen_vuelo_salida'  => 'required|string',
-                'fecha_vuelo_salida'   => "required|date|after_or_equal:$minDate",
-                'hora_vuelo_salida'    => 'required',
-                'num_vuelo_salida'     => 'required|string',
-                'hora_recogida_vuelta' => 'required',
-                'id_hotel_recogida'    => 'required|integer',
-            ];
-        }
+        'origen_vuelo_salida'  => 'required|string',
+        'fecha_vuelo_salida'   => "required|date|after_or_equal:$minDate",
+        'hora_vuelo_salida'    => 'required',
+        'num_vuelo_salida'     => 'required|string',
+        'hora_recogida_vuelta' => 'required',
+        'id_hotel_recogida'    => 'required|integer',
+    ];
+}
+
+
 
         $request->validate($rules);
 

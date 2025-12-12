@@ -3,129 +3,173 @@
 @section('content')
 <style>
 
-    .dashboard-wrapper {
-        min-height: 90vh;
-        padding: 2rem 0;
-    }
+   .dashboard-wrapper {
+    min-height: 90vh;
+    padding: 2rem 0;
+}
 
-    .glass-card {
-        background: rgba(255, 255, 255, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        border-radius: 1.5rem;
-        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
-        overflow: hidden;
-    }
+.glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+}
 
-    .card-header-custom {
-        background: linear-gradient(90deg, #0f9f9a, #0f766e);
-        padding: 1.5rem 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        color: white;
-    }
+/* HEADER */
+.card-header-custom {
+    background: linear-gradient(90deg, #0f9f9a, #0f766e);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+}
 
-    .table-responsive {
-        padding: 0;
-    }
+/* TABLE WRAPPER */
+.table-responsive {
+    overflow-x: auto;
+}
 
-    .custom-table {
-        margin-bottom: 0;
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-    }
+/* TABLE */
+.custom-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
 
-    .custom-table thead th {
-        background-color: #f1f5f9;
-        color: #475569;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.05em;
-        padding: 1rem 1rem;
-        border-bottom: 2px solid #e2e8f0;
-        white-space: nowrap;
-    }
+/* CABECERAS  */
+.custom-table thead th {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    padding: 1rem 0.75rem; 
+    border-bottom: 2px solid #e2e8f0;
+    text-align: center;      
+    vertical-align: middle;
+}
 
-    .custom-table tbody tr {
-        transition: background-color 0.2s ease;
-    }
+/*  CELDAS */
+.custom-table tbody td {
+    padding: 0.6rem 0.75rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+    color: #334155;
+}
 
-    .custom-table tbody tr:hover {
-        background-color: #f8fafc;
-    }
+.custom-table td:nth-child(1),
+.custom-table td:nth-last-child(1),
+.custom-table td:nth-child(7) {
+    white-space: nowrap;
+}
 
-    .custom-table tbody td {
-        padding: 1rem 1rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #f1f5f9;
-        font-size: 0.9rem;
-        color: #334155;
-    }
+/* TEXTOS */
+.fw-medium { font-weight: 600; }
+.text-teal { color: #0f766e; }
+.text-gold { color: #d97706; }
 
-    .fw-medium { font-weight: 600; }
-    .text-teal { color: #0f766e; }
-    .text-gold { color: #d97706; }
-    
+/* LOCALIZADOR */
+.loc-code {
+    font-family: monospace;
+    background: #f1f5f9;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
 
-    .loc-code {
-        font-family: monospace;
-        background: #f1f5f9;
-        padding: 0.2rem 0.5rem;
-        border-radius: 4px;
-        color: #0f172a;
-        font-weight: 600;
-    }
+/* ESTADOS */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
 
+.status-success { background: #dcfce7; color: #166534; }
+.status-danger  { background: #fee2e2; color: #991b1b; }
+.status-gray    { background: #f1f5f9; color: #475569; }
 
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.35rem 0.75rem;
-        border-radius: 999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-    .status-success { background: #dcfce7; color: #166534; } 
-    .status-danger  { background: #fee2e2; color: #991b1b; } 
-    .status-gray    { background: #f1f5f9; color: #475569; } 
+/* BOTONES */
+.btn-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: 0.15s;
+}
 
+.btn-edit {
+    background-color: #facc6b;
+    color: #78350f;
+}
 
-    .btn-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border: none;
-        transition: all 0.2s;
-        color: white;
-    }
-    .btn-edit { background-color: #facc6b; color: #78350f; } 
-    .btn-edit:hover { background-color: #fbbf24; transform: translateY(-2px); }
-    
-    .btn-delete { background-color: #fee2e2; color: #ef4444; } 
-    .btn-delete:hover { background-color: #fecaca; color: #dc2626; transform: translateY(-2px); }
+.btn-delete {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
 
-    .disabled-action { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
+.disabled-action {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
 
+/* ICONOS */
+.td-icon {
+    width: 15px;
+    height: 15px;
+    color: #94a3b8;
+    margin-right: 0.3rem;
+}
 
-    .td-icon {
-        width: 16px; 
-        height: 16px; 
-        color: #94a3b8; 
-        margin-right: 0.4rem;
-        vertical-align: text-bottom;
-    }
+/* PRECIO */
+.price-tag {
+    font-weight: 700;
+    color: #0f766e;
+}
 
-    .price-tag {
-        font-weight: 700;
-        color: #0f766e;
-    }
+/* PAGINACIÓN  */
+
+.pagination {
+    gap: 0.35rem;
+}
+
+.page-item .page-link {
+    border: none;
+    border-radius: 8px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #0f766e;
+    background-color: #f1f5f9;
+    transition: all 0.15s ease;
+}
+
+.page-item .page-link:hover {
+    background-color: #ccfbf1;
+    color: #0f766e;
+}
+
+.page-item.active .page-link {
+    background-color: #0f766e;
+    color: white;
+}
+
+.page-item.disabled .page-link {
+    background-color: transparent;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
 </style>
 
 <div class="dashboard-wrapper">
@@ -140,7 +184,7 @@
                     <h5 class="mb-0 fw-bold">Gestión de Reservas</h5>
                 </div>
                 <div class="small opacity-75">
-                    {{ count($reservas) }} Registros
+                    {{ $reservas->total() }} Registros
                 </div>
             </div>
 
@@ -154,9 +198,11 @@
                             <th>Fecha Traslado</th>
                             <th>Ruta</th>
                             <th>Vehículo</th>
-                            <th class="text-center">Pax</th>
+                            <th class="text-center">Pasajeros</th>
                             <th class="text-end">Precio</th>
-                            <th class="text-end">Comisión</th>
+                            @if($rol !== 'user')
+    <th class="text-end">Comisión</th>
+@endif
                             <th class="text-center">Estado</th>
                             <th class="text-center">Acciones</th>
                         </tr>
@@ -164,8 +210,7 @@
                     <tbody>
                         @foreach($reservas as $reserva)
                         @php
-                            $reserva_fecha   = \Carbon\Carbon::parse($reserva->fecha_reserva);
-                            $puede_modificar = $reserva_fecha->diffInHours($now, false) > 48 || $rol == 'admin';
+    $puede_modificar = $reserva->puedeSerModificadaPor($rol);
 
                             $origen  = '';
                             $destino = '';
@@ -227,14 +272,43 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                     @if($reserva->id_tipo_reserva == 1)
-                                        {{ \Carbon\Carbon::parse($reserva->fecha_entrada)->format('d/m/Y H:i') }}
+                                        {{ 
+    \Carbon\Carbon::createFromFormat(
+        'Y-m-d H:i:s',
+        $reserva->fecha_entrada.' '.$reserva->hora_entrada
+    )->format('d/m/Y H:i')
+}}
+
                                     @elseif($reserva->id_tipo_reserva == 2)
-                                        {{ \Carbon\Carbon::parse($reserva->fecha_vuelo_salida)->format('d/m/Y H:i') }}
+                                        {{ 
+    \Carbon\Carbon::createFromFormat(
+        'Y-m-d H:i:s',
+        $reserva->fecha_vuelo_salida.' '.$reserva->hora_vuelo_salida
+    )->format('d/m/Y H:i')
+}}
+
                                     @elseif($reserva->id_tipo_reserva == 3)
                                         <div class="d-flex flex-column small">
-                                            <span>IDA: {{ \Carbon\Carbon::parse($reserva->fecha_entrada)->format('d/m') }}</span>
-                                            <span>VTA: {{ \Carbon\Carbon::parse($reserva->fecha_vuelo_salida)->format('d/m') }}</span>
-                                        </div>
+    <span>
+        IDA:
+        {{
+            \Carbon\Carbon::createFromFormat(
+                'Y-m-d H:i:s',
+                $reserva->fecha_entrada.' '.$reserva->hora_entrada
+            )->format('d/m H:i')
+        }}
+    </span>
+    <span>
+        VTA:
+        {{
+            \Carbon\Carbon::createFromFormat(
+                'Y-m-d H:i:s',
+                $reserva->fecha_vuelo_salida.' '.$reserva->hora_vuelo_salida
+            )->format('d/m H:i')
+        }}
+    </span>
+</div>
+
                                     @endif
                                 </div>
                             </td>
@@ -268,7 +342,7 @@
                             {{-- PAX --}}
                             <td class="text-center">
                                 <span class="badge bg-white text-dark border">
-                                    {{ $reserva->num_viajeros }} <span class="text-muted">pax</span>
+                                    {{ $reserva->num_viajeros }} <span class="text-muted">👤</span>
                                 </span>
                             </td>
 
@@ -278,9 +352,13 @@
                             </td>
 
                             {{-- COMISIÓN --}}
-                            <td class="text-end">
-                                <span class="text-gold fw-bold">+{{ number_format($reserva->comision_ganada, 2) }} €</span>
-                            </td>
+                            @if($rol !== 'user')
+    <td class="text-end">
+        <span class="text-gold fw-bold">
+            +{{ number_format($reserva->comision_ganada, 2) }} €
+        </span>
+    </td>
+@endif
 
                             {{-- ESTADO --}}
                             <td class="text-center">
@@ -301,7 +379,7 @@
 
                             {{-- ACCIONES --}}
                             <td class="text-center">
-                                @if($puede_modificar && $reserva->estado !== 'anulada')
+                                @if($puede_modificar && $reserva->estado_final === 'Confirmada')
                                     <div class="d-flex gap-1 justify-content-center">
                                         {{-- Edit Button --}}
                                         <a href="{{ route('reserva.edit', $reserva->id_reserva) }}" class="btn-icon btn-edit" title="Modificar Reserva">
@@ -332,8 +410,13 @@
                     </tbody>
                 </table>
             </div> {{-- End Table Responsive --}}
-            
-            @if($reservas->isEmpty())
+            @if ($reservas->hasPages())
+    <div class="p-4 border-top d-flex justify-content-center">
+        {{ $reservas->links() }}
+    </div>
+@endif
+
+            @if($reservas->total() === 0)
                 <div class="text-center py-5">
                     <div class="mb-3 text-muted">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 48px; height: 48px; opacity: 0.5;">
