@@ -17,31 +17,48 @@ class Reserva extends Model
 
     // Campos que se pueden asignar masivamente (todos los campos que se llenarán)
     protected $fillable = [
-        'localizador',
-        'id_tipo_reserva',
-        'email_cliente',
-        'id_owner',
-        'tipo_owner',
-        'fecha_reserva',
-        'fecha_modificacion',
-        'id_hotel',
-        'id_destino',
-        'num_viajeros',
-        'id_vehiculo',
-        'precio_total',
-        'comision_ganada',
-        'comision_liquidada',
-        'fecha_entrada',
-        'hora_entrada',
-        'numero_vuelo_entrada',
-        'origen_vuelo_entrada',
-        'hora_vuelo_salida',
-        'fecha_vuelo_salida',
-        'numero_vuelo_salida',
-        'origen_vuelo_salida',
-        'hora_recogida_hotel',
-        'estado',  
-    ];
+    'localizador',
+    'id_tipo_reserva',
+    'email_cliente',
+
+    // OWNER
+    'id_owner',
+    'tipo_owner',
+
+    // CREADOR REAL
+    'created_by_type',
+    'created_by_id',
+
+    // FECHAS
+    'fecha_reserva',
+    'fecha_modificacion',
+
+    // HOTEL / DESTINO
+    'id_hotel',
+    'id_destino',
+
+    // VIAJE
+    'fecha_entrada',
+    'hora_entrada',
+    'numero_vuelo_entrada',
+    'origen_vuelo_entrada',
+
+    'fecha_vuelo_salida',
+    'hora_vuelo_salida',
+    'numero_vuelo_salida',
+    'origen_vuelo_salida',
+    'hora_recogida_hotel',
+
+    // VEHÍCULO / PRECIO
+    'num_viajeros',
+    'id_vehiculo',
+    'precio_total',
+    'comision_ganada',
+    'comision_liquidada',
+
+    // ESTADO
+    'estado',
+];
 
     
 
