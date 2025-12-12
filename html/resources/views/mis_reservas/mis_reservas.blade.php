@@ -1,5 +1,18 @@
 @extends('layouts.app')
 
+@php
+    use Carbon\Carbon;
+
+    function fmtDateTime($date, $time, $out = 'd/m H:i') {
+        if (empty($date) || empty($time)) return '—';
+        try {
+            return Carbon::parse(trim($date).' '.trim($time))->format($out);
+        } catch (\Throwable $e) {
+            return '—';
+        }
+    }
+@endphp
+
 @section('content')
 <style>
 
@@ -45,9 +58,9 @@
     text-transform: uppercase;
     font-size: 0.72rem;
     letter-spacing: 0.05em;
-    padding: 1rem 0.75rem; 
+    padding: 1rem 0.75rem;
     border-bottom: 2px solid #e2e8f0;
-    text-align: center;      
+    text-align: center;
     vertical-align: middle;
 }
 
@@ -173,7 +186,10 @@
 </style>
 
 <div class="dashboard-wrapper">
+
+
     <div class="container-fluid px-lg-5"> <div class="glass-card">
+    
             {{-- Header --}}
             <div class="card-header-custom">
                 <div class="d-flex align-items-center gap-2">
@@ -234,10 +250,10 @@
                                     $destino = 'Desconocido';
                                     break;
                             }
-                            
+
                             // Determinar Clase Estado
                             $badgeClass = 'status-success';
-                            $iconStatus = ''; 
+                            $iconStatus = '';
                             if($reserva->estado_final == 'Anulada') {
                                 $badgeClass = 'status-danger';
                             } elseif($reserva->estado_final == 'Finalizada') {
@@ -272,7 +288,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                     @if($reserva->id_tipo_reserva == 1)
-                                        {{ 
+                                        {{
     \Carbon\Carbon::createFromFormat(
         'Y-m-d H:i:s',
         $reserva->fecha_entrada.' '.$reserva->hora_entrada
@@ -280,7 +296,7 @@
 }}
 
                                     @elseif($reserva->id_tipo_reserva == 2)
-                                        {{ 
+                                        {{
     \Carbon\Carbon::createFromFormat(
         'Y-m-d H:i:s',
         $reserva->fecha_vuelo_salida.' '.$reserva->hora_vuelo_salida
@@ -291,21 +307,11 @@
                                         <div class="d-flex flex-column small">
     <span>
         IDA:
-        {{
-            \Carbon\Carbon::createFromFormat(
-                'Y-m-d H:i:s',
-                $reserva->fecha_entrada.' '.$reserva->hora_entrada
-            )->format('d/m H:i')
-        }}
+        {{ fmtDateTime($reserva->fecha_entrada, $reserva->hora_entrada) }}
     </span>
     <span>
         VTA:
-        {{
-            \Carbon\Carbon::createFromFormat(
-                'Y-m-d H:i:s',
-                $reserva->fecha_vuelo_salida.' '.$reserva->hora_vuelo_salida
-            )->format('d/m H:i')
-        }}
+        {{ fmtDateTime($reserva->fecha_vuelo_salida, $reserva->hora_vuelo_salida) }}
     </span>
 </div>
 

@@ -96,6 +96,22 @@
             <div class="panel-header">
                 <h4>Editar Reserva: Hotel → Aeropuerto</h4>
             </div>
+<<<<<<< HEAD
+            <div class="card-body">
+                <form method="POST" action="{{ route('reserva.update', $reserva->id_reserva) }}">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="id_owner" value="{{ $reserva->id_owner }}">
+                    <input type="hidden" name="id_hotel" value="{{ $reserva->id_hotel }}">
+
+                    {{-- Vuelo de Salida --}}
+                    <h5 class="mb-3 text-secondary"><i class="fas fa-plane-departure"></i> Datos del Vuelo (Salida)</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="fecha_vuelo_salida" class="form-label">Día del Vuelo</label>
+                            <input type="date" class="form-control" name="fecha_vuelo_salida"
+                                   value="{{ old('fecha_vuelo_salida', $reserva->fecha_vuelo_salida) }}" required>
+=======
 
             <form method="POST" action="{{ route('reserva.update', $reserva->id_reserva) }}">
                 @csrf
@@ -113,12 +129,23 @@
                                    name="origen_vuelo_salida"
                                    value="{{ old('origen_vuelo_salida', $reserva->origen_vuelo_salida) }}"
                                    required>
+>>>>>>> origin/devel
                         </div>
 
                         <div class="col-md-6 mb-3">
+<<<<<<< HEAD
+                            <label for="hora_vuelo_salida" class="form-label">Hora de Salida</label>
+                            <input type="time" class="form-control" name="hora_vuelo_salida"
+                                   value="{{ old('hora_vuelo_salida', $reserva->hora_vuelo_salida) }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="numero_vuelo_salida" class="form-label">Número de Vuelo</label>
+                            <input type="text" class="form-control" name="numero_vuelo_salida"
+=======
                             <label class="form-label">Número de Vuelo</label>
                             <input type="text" class="form-control"
                                    name="numero_vuelo_salida"
+>>>>>>> origin/devel
                                    value="{{ old('numero_vuelo_salida', $reserva->numero_vuelo_salida) }}">
                         </div>
 
@@ -169,12 +196,23 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
+<<<<<<< HEAD
+                            <label for="email_cliente" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email_cliente"
+                                   value="{{ old('email_cliente', $reserva->email_cliente) }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="num_viajeros" class="form-label">Número de Pasajeros</label>
+                            <input type="number" class="form-control" name="num_viajeros"
+                                   value="{{ old('num_viajeros', $reserva->num_viajeros) }}" min="1" required>
+=======
                             <label class="form-label">Hora de Recogida en Hotel</label>
                             <input type="time" class="form-control"
                                    name="hora_recogida_hotel"
                                    value="{{ old('hora_recogida_hotel', $reserva->hora_recogida_hotel) }}"
                                    required>
                             <small class="text-muted">Recomendado: 3–4 horas antes del vuelo.</small>
+>>>>>>> origin/devel
                         </div>
                     </div>
                 </div>
@@ -195,12 +233,18 @@
                         </select>
                     </div>
 
+<<<<<<< HEAD
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ route('mis_reservas') }}" class="btn btn-secondary btn-lg">Cancelar</a>
+                        <button type="submit" class="btn btn-success btn-lg">Actualizar Reserva</button>
+=======
                     <div class="mb-3">
                         <label class="form-label">Número de Pasajeros</label>
                         <input type="number" class="form-control"
                                name="num_viajeros"
                                value="{{ old('num_viajeros', $reserva->num_viajeros) }}"
                                min="1" required>
+>>>>>>> origin/devel
                     </div>
                 </div>
 

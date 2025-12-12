@@ -137,7 +137,7 @@
     </div>
 
     {{-- SECCIÓN: ELIGE TU TRASLADO --}}
-    <section class="transfer-options">
+    <section id="transfers" class="transfer-options">
         <div class="transfer-options-header">
             <h2 class="landing-section-title h4 mb-2">
                 Elige tu traslado en la isla
