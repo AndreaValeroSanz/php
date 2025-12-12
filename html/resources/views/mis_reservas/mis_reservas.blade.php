@@ -238,14 +238,43 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                     @if($reserva->id_tipo_reserva == 1)
-                                        {{ \Carbon\Carbon::parse($reserva->fecha_entrada)->format('d/m/Y H:i') }}
+                                        {{ 
+    \Carbon\Carbon::createFromFormat(
+        'Y-m-d H:i:s',
+        $reserva->fecha_entrada.' '.$reserva->hora_entrada
+    )->format('d/m/Y H:i')
+}}
+
                                     @elseif($reserva->id_tipo_reserva == 2)
-                                        {{ \Carbon\Carbon::parse($reserva->fecha_vuelo_salida)->format('d/m/Y H:i') }}
+                                        {{ 
+    \Carbon\Carbon::createFromFormat(
+        'Y-m-d H:i:s',
+        $reserva->fecha_vuelo_salida.' '.$reserva->hora_vuelo_salida
+    )->format('d/m/Y H:i')
+}}
+
                                     @elseif($reserva->id_tipo_reserva == 3)
                                         <div class="d-flex flex-column small">
-                                            <span>IDA: {{ \Carbon\Carbon::parse($reserva->fecha_entrada)->format('d/m') }}</span>
-                                            <span>VTA: {{ \Carbon\Carbon::parse($reserva->fecha_vuelo_salida)->format('d/m') }}</span>
-                                        </div>
+    <span>
+        IDA:
+        {{
+            \Carbon\Carbon::createFromFormat(
+                'Y-m-d H:i:s',
+                $reserva->fecha_entrada.' '.$reserva->hora_entrada
+            )->format('d/m H:i')
+        }}
+    </span>
+    <span>
+        VTA:
+        {{
+            \Carbon\Carbon::createFromFormat(
+                'Y-m-d H:i:s',
+                $reserva->fecha_vuelo_salida.' '.$reserva->hora_vuelo_salida
+            )->format('d/m H:i')
+        }}
+    </span>
+</div>
+
                                     @endif
                                 </div>
                             </td>
