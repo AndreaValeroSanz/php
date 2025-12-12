@@ -73,4 +73,9 @@ class Hotel extends Authenticatable
             'password'    => ['nullable', 'string', 'min:6', 'confirmed'],
         ];
     }
+
+    public function zona()
+    {
+        return $this->belongsTo(\App\Models\Zona::class, 'id_zona', 'id_zona');
+    }
 }
