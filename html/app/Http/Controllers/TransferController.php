@@ -53,7 +53,27 @@ $minDate = $isAdmin
     : Carbon::now()->addHours(48)->format('Y-m-d');
 
 
-$hotels = Hotel::where('activo', 1)->get();
+$hotelLogado = null;
+
+if (Auth::guard('corporate')->check()) {
+    $hotelId = Auth::guard('corporate')->user()->id_hotel;
+
+    $hotelLogado = Hotel::where('activo', 1)
+        ->where('id_hotel', $hotelId)
+        ->first(); // 1 solo
+
+    // Para reutilizar el Blade si quieres seguir con $hotels
+    $hotels = collect();
+    if ($hotelLogado) {
+        $hotels = collect([$hotelLogado]);
+    }
+
+} else {
+    // Admin o viajero -> todos
+    $hotels = Hotel::where('activo', 1)
+        ->orderBy('nombre')   // IMPORTANTE: orden estable
+        ->get();
+}
 
 
         $vehiculos = collect();
@@ -85,7 +105,8 @@ $hotels = Hotel::where('activo', 1)->get();
             'minDate',
             'hotels',
             'vehiculos',
-            'viajeros'
+            'viajeros',
+            'hotelLogado'
         ));
     }
 
