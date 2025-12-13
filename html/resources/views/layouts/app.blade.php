@@ -135,8 +135,8 @@
             {{-- ADMIN --}}
             @if ($isAdmin)
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
-                    href="{{ route('admin.dashboard') }}">
+                    <a class="nav-link text-white {{ request()->routeIs('/') ? 'active' : '' }}"
+                    href="{{ route('home') }}">
                         Inicio
                     </a>
                 </li>
@@ -158,8 +158,8 @@
             {{-- HOTEL (corporate) --}}
             @elseif ($isCorporate)
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->routeIs('corporate.dashboard') ? 'active' : '' }}"
-                    href="{{ route('corporate.dashboard') }}">
+                    <a class="nav-link text-white {{ request()->routeIs('/') ? 'active' : '' }}"
+                    href="{{ route('home') }}">
                         Inicio
                     </a>
                 </li>
@@ -179,8 +179,8 @@
             {{-- VIAJERO (web) --}}
             @elseif ($isTraveler)
                 <li class="nav-item">
-                    <a class="nav-link text-white {{ request()->routeIs('user.dashboard') ? 'active' : '' }}"
-                    href="{{ route('user.dashboard') }}">
+                    <a class="nav-link text-white {{ request()->routeIs('/') ? 'active' : '' }}"
+                    href="{{ route('home') }}">
                         Inicio
                     </a>
                 </li>
@@ -246,7 +246,7 @@
             {{-- Si eres ADMIN --}}
             @if ($isAdmin)
                 <a href="{{ route('admin.dashboard') }}" class="btn btn-sm btn-light">
-                    Panel Admin
+                    Panel
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -257,7 +257,7 @@
             {{-- Si eres HOTEL --}}
             @if ($isCorporate)
                 <a href="{{ route('corporate.dashboard') }}" class="btn btn-sm btn-light">
-                    Panel Hotel
+                    Panel
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -268,7 +268,7 @@
             {{-- Si eres VIAJERO --}}
             @if ($isTraveler)
                 <a href="{{ route('user.dashboard') }}" class="btn btn-sm btn-light">
-                    Mi Cuenta
+                    Panel
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
