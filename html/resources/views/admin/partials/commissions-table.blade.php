@@ -1,9 +1,16 @@
 <div class="glass-panel">
     <div class="panel-header-brand">
         <h5 class="mb-0 fw-bold">
-            Gestión de Comisiones — 
-            {{ date('F Y', mktime(0,0,0,$month,1,$year)) }}
-        </h5>
+    Gestión de Comisiones —
+    @if($month !== 'all' && $year !== 'all')
+        {{ ucfirst(\Carbon\Carbon::createFromDate($year, $month, 1)->locale('es')->isoFormat('MMMM YYYY')) }}
+    @elseif($year !== 'all')
+        Año {{ $year }}
+    @else
+        Todas
+    @endif
+</h5>
+
         <span class="badge bg-white text-teal bg-opacity-90 shadow-sm">
             Reporte mensual
         </span>
@@ -23,23 +30,33 @@
             <div class="col-md-3">
                 <label class="form-label fw-semibold text-teal">Mes</label>
                 <select name="month" class="form-select">
-                    @for ($i = 1; $i <= 12; $i++)
-                        <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>
-                            {{ ucfirst(\Carbon\Carbon::createFromDate($year, $i, 1)->locale('es')->isoFormat('MMMM')) }}
-                        </option>
-                    @endfor
-                </select>
+    <option value="all" {{ $month === 'all' ? 'selected' : '' }}>
+        Todos los meses
+    </option>
+
+    @for ($i = 1; $i <= 12; $i++)
+        <option value="{{ $i }}" {{ (string)$month === (string)$i ? 'selected' : '' }}>
+            {{ ucfirst(\Carbon\Carbon::createFromDate(2000, $i, 1)
+                ->locale('es')
+                ->isoFormat('MMMM')) }}
+        </option>
+    @endfor
+</select>
             </div>
 
             <div class="col-md-3">
                 <label class="form-label fw-semibold text-teal">Año</label>
                 <select name="year" class="form-select">
-                    @for ($i = now()->year - 2; $i <= now()->year + 1; $i++)
-                        <option value="{{ $i }}" {{ $year == $i ? 'selected' : '' }}>
-                            {{ $i }}
-                        </option>
-                    @endfor
-                </select>
+    <option value="all" {{ $year === 'all' ? 'selected' : '' }}>
+        Todos los años
+    </option>
+
+    @for ($i = now()->year - 5; $i <= now()->year + 1; $i++)
+        <option value="{{ $i }}" {{ (string)$year === (string)$i ? 'selected' : '' }}>
+            {{ $i }}
+        </option>
+    @endfor
+</select>
             </div>
 
             <div class="col-md-4">
@@ -55,11 +72,11 @@
                 </select>
             </div>
 
-            <div class="col-md-2 d-flex align-items-end">
-                <button class="btn btn-teal w-100">
-                    <i class="fas fa-filter me-1"></i> Aplicar
-                </button>
-            </div>
+            <div class="col-md-2 d-flex align-items-end gap-2">
+    <button class="btn btn-teal w-100">
+        <i class="fas fa-filter me-1"></i> Aplicar
+    </button>
+</div>
         </form>
 
         {{-- TABLA GENERAL --}}
