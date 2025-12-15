@@ -5,6 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Hotel;
+use App\Models\Viajero;
+use App\Models\Admin;
+
 
 class Reserva extends Model
 {
@@ -88,6 +93,66 @@ class Reserva extends Model
     {
         return $this->belongsTo(\App\Models\Vehiculo::class, 'id_vehiculo', 'id_vehiculo');
     }
+
+    // ==========================
+// CREADOR DE LA RESERVA
+// ==========================
+
+// Si la crea un ADMIN
+public function adminCreador()
+{
+    return $this->belongsTo(Admin::class, 'created_by_id', 'id_admin');
+}
+
+// Si la crea un USUARIO (viajero)
+public function userCreador()
+{
+    return $this->belongsTo(Viajero::class, 'created_by_id', 'id_viajero');
+}
+
+// Si la crea un HOTEL
+public function hotelCreador()
+{
+    return $this->belongsTo(Hotel::class, 'created_by_id', 'id_hotel');
+}
+
+public function getCreadorAttribute()
+{
+    return match ($this->created_by_type) {
+        'hotel' => $this->hotelCreador,
+        'admin' => $this->adminCreador,
+        'user'  => $this->userCreador,
+        default => null,
+    };
+}
+
+public function getCreadorEtiquetaAttribute(): string
+{
+    return match ($this->created_by_type) {
+        'hotel' => 'Hotel',
+        'admin' => 'Administrador',
+        'user'  => 'Viajero',
+        default => 'Desconocido',
+    };
+}
+
+public function getCreadorNombreAttribute(): ?string
+{
+    if (!$this->creador) {
+        return null;
+    }
+
+    return match ($this->created_by_type) {
+        'hotel' => $this->creador->nombre ?? null,
+        'user'  => $this->creador->nombre ?? null,
+        'admin' => $this->creador->nombre_admin
+                    ?? $this->creador->nombre
+                    ?? $this->creador->email
+                    ?? null,
+        default => null,
+    };
+}
+
 
 public function fechaLimite()
 {
