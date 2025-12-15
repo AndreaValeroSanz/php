@@ -189,15 +189,25 @@
 
                     <div class="col-md-3">
                         <label class="form-label fw-semibold text-teal">Desde</label>
-                        <input type="date" name="fecha_desde" class="form-control"
-                               value="{{ request('fecha_desde') }}">
+                        <input
+    type="date"
+    id="fecha_desde"
+    name="fecha_desde"
+    class="form-control"
+    value="{{ request('fecha_desde') }}"
+>
                     </div>
 
                     <div class="col-md-3">
-                        <label class="form-label fw-semibold text-teal">Hasta</label>
-                        <input type="date" name="fecha_hasta" class="form-control"
-                               value="{{ request('fecha_hasta') }}">
-                    </div>
+    <label class="form-label fw-semibold text-teal">Hasta</label>
+    <input
+    type="date"
+    id="fecha_hasta"
+    name="fecha_hasta"
+    class="form-control"
+    value="{{ request('fecha_hasta') }}"
+>
+</div>
 
                     <div class="col-md-3 d-flex align-items-end">
                         <button class="btn btn-teal w-100">Filtrar</button>
@@ -334,4 +344,34 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const desde = document.getElementById('fecha_desde');
+    const hasta = document.getElementById('fecha_hasta');
+
+    if (!desde || !hasta) return;
+
+    function syncFechas() {
+        if (desde.value) {
+            // Bloquear fechas anteriores en "hasta"
+            hasta.min = desde.value;
+
+            // Si la fecha hasta es anterior, la borramos
+            if (hasta.value && hasta.value < desde.value) {
+                hasta.value = '';
+            }
+        } else {
+            hasta.removeAttribute('min');
+        }
+    }
+
+    // Al cambiar "desde"
+    desde.addEventListener('change', syncFechas);
+
+    // Al cargar la página (caso filtros activos)
+    syncFechas();
+});
+</script>
+
 @endsection
