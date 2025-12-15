@@ -108,6 +108,63 @@
         align-items:center;
         justify-content:center;
     }
+
+    .quick-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .75rem;
+    padding: 1.75rem 1rem;
+    border-radius: 1.25rem;
+    background: rgba(255,255,255,.85);
+    border: 1px solid rgba(226,232,240,.8);
+    text-decoration: none;
+    color: #0f172a;
+    box-shadow: 0 8px 20px rgba(15,23,42,.05);
+    transition: all .25s ease;
+}
+
+.quick-link:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(15,23,42,.12);
+    background: #f0fdfa;
+}
+
+.quick-link-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quick-link span {
+    font-size: .95rem;
+    font-weight: 700;
+}
+
+/* Color variants */
+.quick-transfer .quick-link-icon {
+    background: rgba(14,165,233,.15);
+    color: #0284c7;
+}
+
+.quick-reservas .quick-link-icon {
+    background: rgba(59,130,246,.15);
+    color: #2563eb;
+}
+
+.quick-calendar .quick-link-icon {
+    background: rgba(16,185,129,.15);
+    color: #059669;
+}
+
+.quick-profile .quick-link-icon {
+    background: rgba(100,116,139,.15);
+    color: #475569;
+}
 </style>
 
 <div class="dashboard-container">
@@ -184,48 +241,78 @@
 
                 <div class="panel-body">
 
-                    {{-- Primera fila --}}
-                    <div class="row g-3 mb-3">
-                        <div class="col-6 d-grid">
-                            <a href="{{ route('transfer.select-type') }}" class="btn btn-outline-info py-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-                                </svg>
-                                <span class="fw-bold mt-2 d-block">Reservar Nuevo Traslado</span>
-                            </a>
-                        </div>
-                        <div class="col-6 d-grid">
-                            <a href="{{ route('mis_reservas') }}" class="btn btn-outline-primary py-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
-                                </svg>
-                                <span class="fw-bold mt-2 d-block">Mis Reservas</span>
-                            </a>
-                        </div>
-                    </div>
+    <div class="row g-4">
 
-                    {{-- Segunda fila --}}
-                    <div class="row g-3">
-                        <div class="col-6 d-grid">
-                            <a href="{{ route('calendar.index') }}" class="btn btn-outline-success py-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                <span class="fw-bold mt-2 d-block">Calendario</span>
-                            </a>
-                        </div>
-                        <div class="col-6 d-grid">
-                            <a href="{{ route('profile.edit') }}" class="btn btn-outline-secondary py-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                </svg>
-                                <span class="fw-bold mt-2 d-block">Editar Perfil</span>
-                            </a>
-                        </div>
-                    </div>
-
+        <div class="col-md-3 col-6">
+            <a href="{{ route('transfer.select-type') }}"
+               class="quick-link quick-transfer">
+                <div class="quick-link-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                    </svg>
                 </div>
+                <span>Nuevo Traslado</span>
+            </a>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <a href="{{ route('mis_reservas') }}"
+               class="quick-link quick-reservas">
+                <div class="quick-link-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                    </svg>
+                </div>
+                <span>Mis Reservas</span>
+            </a>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <a href="{{ route('calendar.index') }}"
+               class="quick-link quick-calendar">
+                <div class="quick-link-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <span>Calendario</span>
+            </a>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <a href="{{ route('profile.edit') }}"
+               class="quick-link quick-profile">
+                <div class="quick-link-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0
+                              a1.724 1.724 0 002.573 1.066c1.543-.94
+                              3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572
+                              c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0
+                              00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37
+                              a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924
+                              1.756-3.35 0a1.724 1.724 0 00-2.573-1.066
+                              c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0
+                              00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35
+                              a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31
+                              2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <span>Editar Perfil</span>
+            </a>
+        </div>
+
+    </div>
+</div>
             </div>
         </div>
     </div>
