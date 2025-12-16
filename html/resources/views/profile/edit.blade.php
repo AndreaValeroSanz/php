@@ -125,7 +125,6 @@
           {{-- Header --}}
           <div class="card-header-custom">
             <div class="d-flex align-items-center gap-2">
-              {{-- Icon: User --}}
               <svg xmlns="http://www.w3.org/2000/svg" class="header-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round"
                       d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.118a7.5 7.5 0 0115 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.5-1.632z" />
@@ -152,7 +151,7 @@
 
                 {{-- Nombre --}}
                 <div class="col-12">
-                  <label class="form-label-custom">Nombre completo</label>
+                  <label class="form-label-custom">Nombre</label>
                   <input
                     type="text"
                     name="nombre"
@@ -180,27 +179,93 @@
                   @enderror
                 </div>
 
-                {{-- Dirección (solo usuario/viajero) --}}
-                @if(isset($user->direccion))
-                <div class="col-12">
-                    <label class="form-label-custom">Dirección</label>
-                    <textarea
-                        name="direccion"
-                        rows="2"
-                        class="form-control input-soft @error('direccion') is-invalid @enderror"
-                        placeholder="Calle, número, ciudad, código postal, país"
-                    >{{ old('direccion', $user->direccion) }}</textarea>
-
-                    <div class="form-hint">
-                        Dirección asociada a tu perfil.
-                    </div>
-
-                    @error('direccion')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                {{-- CAMPOS EXTRA SOLO PARA VIAJERO --}}
+                @if(($guard ?? '') === 'web')
+                  <div class="col-12 col-md-6">
+                    <label class="form-label-custom">Primer apellido</label>
+                    <input
+                      type="text"
+                      name="apellido1"
+                      class="form-control input-soft @error('apellido1') is-invalid @enderror"
+                      value="{{ old('apellido1', $user->apellido1 ?? '') }}"
+                      placeholder="Primer apellido"
+                    >
+                    @error('apellido1')
+                      <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                </div>
-                @endif
+                  </div>
 
+                  <div class="col-12 col-md-6">
+                    <label class="form-label-custom">Segundo apellido</label>
+                    <input
+                      type="text"
+                      name="apellido2"
+                      class="form-control input-soft @error('apellido2') is-invalid @enderror"
+                      value="{{ old('apellido2', $user->apellido2 ?? '') }}"
+                      placeholder="Segundo apellido"
+                    >
+                    @error('apellido2')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label-custom">Dirección</label>
+                    <input
+                      type="text"
+                      name="direccion"
+                      class="form-control input-soft @error('direccion') is-invalid @enderror"
+                      value="{{ old('direccion', $user->direccion ?? '') }}"
+                      placeholder="Calle, número, piso..."
+                    >
+                    <div class="form-hint">Dirección asociada a tu perfil.</div>
+                    @error('direccion')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
+
+                  <div class="col-12 col-md-4">
+                    <label class="form-label-custom">Código Postal</label>
+                    <input
+                      type="text"
+                      name="codigoPostal"
+                      class="form-control input-soft @error('codigoPostal') is-invalid @enderror"
+                      value="{{ old('codigoPostal', $user->codigoPostal ?? '') }}"
+                      placeholder="00000"
+                    >
+                    @error('codigoPostal')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
+
+                  <div class="col-12 col-md-4">
+                    <label class="form-label-custom">Ciudad</label>
+                    <input
+                      type="text"
+                      name="ciudad"
+                      class="form-control input-soft @error('ciudad') is-invalid @enderror"
+                      value="{{ old('ciudad', $user->ciudad ?? '') }}"
+                      placeholder="Ciudad"
+                    >
+                    @error('ciudad')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
+
+                  <div class="col-12 col-md-4">
+                    <label class="form-label-custom">País</label>
+                    <input
+                      type="text"
+                      name="pais"
+                      class="form-control input-soft @error('pais') is-invalid @enderror"
+                      value="{{ old('pais', $user->pais ?? '') }}"
+                      placeholder="País"
+                    >
+                    @error('pais')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
+                @endif
 
               </div>
 
@@ -212,10 +277,12 @@
                   <label class="form-label-custom">Nueva contraseña</label>
                   <input
                     type="password"
-                    name="password"
-                    class="form-control input-soft @error('password') is-invalid @enderror"
+                    name="password_confirmation"
+                    class="form-control input-soft"
                     placeholder="••••••••"
-                  >
+                    autocomplete="new-password"
+                    />
+
                   <div class="form-hint">Déjalo vacío si no quieres cambiarla.</div>
                   @error('password')
                     <div class="invalid-feedback">{{ $message }}</div>
