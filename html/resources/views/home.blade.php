@@ -433,6 +433,10 @@
 
 </div> {{-- cierre del container principal --}}
 
+@endsection
+
+@section('footer')
+
     <footer class="site-footer">
         <div class="container">
             <div class="row gy-4">
