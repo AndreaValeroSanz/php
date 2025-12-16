@@ -244,8 +244,10 @@
                                 $badgeClass = 'status-gray';
                             }
                         @endphp
-
-                        <tr>
+                        <tr
+    onclick="window.location='{{ route('calendar.show', $reserva->id_reserva) }}?from=mis_reservas'"
+    style="cursor:pointer"
+>
                             {{-- REF & LOC --}}
                             <td>
                                 <div class="d-flex flex-column">
