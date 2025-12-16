@@ -639,16 +639,17 @@
     /* -------- FOOTER FULL-WIDTH -------- */
 
     .site-footer {
-        margin-top: 4rem;
-        /* fondo degradado */
-        background: radial-gradient(circle at 0% 0%, #0f9f9a 0%, #0f766e 35%, #0b5258 70%, #082f49 100%);
-        color: #e5f9f7;
-        padding: 2.5rem 0 1.8rem;
-
-        /* TRUCO para romper cualquier .container padre y ocupar todo el viewport */
-        width: 100vw;
-        margin-left: calc(50% - 50vw);
-    }
+  margin-top: 4rem;
+  background: radial-gradient(
+    circle at 0% 0%,
+    #0f9f9a 0%,
+    #0f766e 35%,
+    #0b5258 70%,
+    #082f49 100%
+  );
+  color: #e5f9f7;
+  padding: 2.5rem 0 1.8rem;
+}
 
     .site-footer .container {
         max-width: 1140px;          /* ancho de contenido centrado */

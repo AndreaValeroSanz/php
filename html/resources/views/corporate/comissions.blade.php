@@ -30,6 +30,7 @@
         width: 100%;
         vertical-align: middle;
     }
+
     .custom-table thead th {
         background-color: #f8fafc;
         color: #475569;
@@ -37,33 +38,32 @@
         text-transform: uppercase;
         font-size: 0.75rem;
         letter-spacing: 0.05em;
-        padding: 1rem 1rem;
+        padding: 1rem;
         border-bottom: 2px solid #e2e8f0;
         white-space: nowrap;
     }
+
     .custom-table tbody td {
         padding: 0.85rem 1rem;
         border-bottom: 1px solid #f1f5f9;
         font-size: 0.9rem;
         color: #334155;
     }
-    .custom-table tbody tr:hover {
-        background-color: #f1f5f9;
-    }
 
     .text-teal { color: #0f766e; font-weight: 700; }
-    .text-gold { color: #d97706; font-weight: 700; }
     .text-success { color: #16a34a; font-weight: 700; }
 
     .form-select, .btn-teal {
         border-radius: 0.5rem;
     }
+
     .btn-teal {
         background-color: #0f766e;
         color: white;
         font-weight: 600;
         border: none;
     }
+
     .btn-teal:hover {
         background-color: #0f9f9a;
     }
@@ -72,48 +72,75 @@
 <div class="dashboard-container">
     <div class="container-fluid px-lg-4">
         <div class="glass-panel">
-            {{-- Header --}}
+
+            {{-- HEADER --}}
             <div class="panel-header-brand">
                 <h5 class="mb-0 fw-bold">
-                    Comisiones de su Hotel ({{ date('F Y', mktime(0, 0, 0, $month, 1, $year)) }})
+                    Comisiones de su Hotel
+                    @if(is_numeric($month))
+    ({{ ucfirst(\Carbon\Carbon::createFromDate($year, $month, 1)
+        ->locale('es')
+        ->isoFormat('MMMM YYYY')) }})
+@else
+    (todas)
+@endif
                 </h5>
-                <div class="badge bg-white text-teal bg-opacity-90 shadow-sm text-dark">
+
+                <div class="badge bg-white text-dark fw-bold">
                     Total: {{ count($commissionReport) }}
                 </div>
             </div>
 
-            {{-- Filtro --}}
+            {{-- FILTRO --}}
             <form method="GET" action="{{ route('corporate.comissions') }}" class="row g-3 p-3">
+
+                {{-- MES --}}
                 <div class="col-auto">
                     <select name="month" class="form-select">
                         @for ($i = 1; $i <= 12; $i++)
                             <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>
-                                {{ date('F', mktime(0,0,0,$i,10)) }}
+                                {{ ucfirst(\Carbon\Carbon::createFromDate($year, $i, 1)->locale('es')->isoFormat('MMMM')) }}
                             </option>
                         @endfor
                     </select>
                 </div>
+
+                {{-- AÑO --}}
                 <div class="col-auto">
                     <select name="year" class="form-select">
-                        @for ($i = \Carbon\Carbon::now()->year - 2; $i <= \Carbon\Carbon::now()->year + 1; $i++)
-                            <option value="{{ $i }}" {{ $year == $i ? 'selected' : '' }}>{{ $i }}</option>
+                        @for ($i = now()->year - 2; $i <= now()->year + 1; $i++)
+                            <option value="{{ $i }}" {{ $year == $i ? 'selected' : '' }}>
+                                {{ $i }}
+                            </option>
                         @endfor
                     </select>
                 </div>
+
+                {{-- BOTÓN FILTRAR --}}
                 <div class="col-auto">
-                    <button type="submit" class="btn btn-teal">Filtrar</button>
+                    <button type="submit" class="btn btn-teal">
+                        Filtrar
+                    </button>
+                </div>
+
+                {{-- BOTÓN VER TODAS --}}
+                <div class="col-auto">
+                    <a href="{{ route('corporate.comissions', ['all' => 1]) }}"
+                       class="btn btn-outline-secondary">
+                        Ver todas
+                    </a>
                 </div>
             </form>
 
-            {{-- Tabla --}}
+            {{-- TABLA --}}
             <div class="table-responsive p-3">
                 <table class="table custom-table">
                     <thead>
                         <tr>
                             <th>Reserva</th>
-                            <th>Fecha</th>
-                            <th class="text-end">Precio Total</th>
-                            <th class="text-end">Comisión Hotel</th>
+                            <th>Fecha traslado</th>
+                            <th class="text-end">Precio</th>
+                            <th class="text-end">Comisión</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -122,33 +149,36 @@
                                 <td>
                                     <span class="loc-code">{{ $report['localizador'] }}</span>
                                 </td>
-                                <td>{{ $report['fecha_reserva'] }}</td>
-                                <td class="text-end text-teal">{{ number_format($report['precio_total'], 2) }} €</td>
-                                <td class="text-end text-success">{{ number_format($report['comision_hotel'], 2) }} €</td>
+                                <td>
+                                    {{ \Carbon\Carbon::parse($report['fecha_traslado'])->format('d-m-Y') }}
+                                </td>
+                                <td class="text-end text-teal">
+                                    {{ number_format($report['precio_total'], 2) }} €
+                                </td>
+                                <td class="text-end text-success">
+                                    {{ number_format($report['comision_hotel'], 2) }} €
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center">No se encontraron reservas para este periodo.</td>
+                                <td colspan="4" class="text-center">
+                                    No se encontraron comisiones.
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
+
                     <tfoot class="table-light">
                         <tr>
-                            <td colspan="3"></td> {{-- Espacio vacío para alinear a la derecha --}}
+                            <td colspan="3"></td>
                             <td class="text-end fw-bold">
-                                TOTAL COMISIÓN: {{ number_format($totalComision, 2) }} €
+                                TOTAL: {{ number_format($totalComision, 2) }} €
                             </td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
 
-            {{-- Pagination --}}
-            @if(method_exists($commissionReport, 'links'))
-                <div class="p-4 border-top">
-                    {{ $commissionReport->links() }}
-                </div>
-            @endif
         </div>
     </div>
 </div>

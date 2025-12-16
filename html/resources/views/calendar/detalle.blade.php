@@ -206,9 +206,21 @@
 
         {{-- BOTÓN VOLVER --}}
         <div class="text-center mt-4">
-            <a href="{{ url('/calendario') }}" class="back-btn">
-                Volver al calendario
-            </a>
+            @php
+    $from = request()->query('from');
+@endphp
+
+<div class="text-center mt-4">
+    @if ($from === 'mis_reservas')
+        <a href="{{ route('mis_reservas') }}" class="back-btn">
+            Volver a Mis reservas
+        </a>
+    @else
+        <a href="{{ route('calendar.index') }}" class="back-btn">
+            Volver al Calendario
+        </a>
+    @endif
+</div>
         </div>
 
     </div>

@@ -108,16 +108,26 @@ class CalendarController extends Controller
 
     public function show($id)
 {
-    $reserva = Reserva::find($id);
+    $reserva = Reserva::with([
+        'zona',
+        'hotel.zona',
+        'vehiculo',
+        'owner',
+        'adminCreador',
+        'userCreador',
+        'hotelCreador',
+    ])->find($id);
 
     if (!$reserva) {
         abort(404, 'Reserva no encontrada');
     }
 
-    $hotel = \App\Models\Hotel::find($reserva->id_hotel);
-    $vehiculo = \App\Models\Vehiculo::find($reserva->id_vehiculo);
-
-    return view('calendar.detalle', compact('reserva', 'hotel', 'vehiculo'));
+    return view('calendar.detalle', [
+        'reserva'  => $reserva,
+        'hotel'    => $reserva->hotel,
+        'vehiculo' => $reserva->vehiculo,
+    ]);
 }
+
 
 }

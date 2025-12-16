@@ -37,13 +37,20 @@
                 </div>
 
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="{{ route('transfer.select-type') }}" class="btn btn-teal">
-                        Reservar traslado
-                    </a>
-                    <a href="{{ route('login') }}" class="btn btn-soft-yellow">
-                        Acceder al panel
-                    </a>
-                </div>
+    <a href="{{ auth('admin')->check() || auth('corporate')->check() || auth('web')->check()
+                ? route('transfer.select-type')
+                : route('login') }}"
+       class="btn btn-teal">
+        Reservar traslado
+    </a>
+
+    <a href="{{ auth('admin')->check() || auth('corporate')->check() || auth('web')->check()
+                ? route('dashboard')
+                : route('login') }}"
+       class="btn btn-soft-yellow">
+        Acceder al panel
+    </a>
+</div>
             </div>
 
             {{-- Columna derecha: carrusel --}}
@@ -433,6 +440,10 @@
 
 </div> {{-- cierre del container principal --}}
 
+@endsection
+
+@section('footer')
+
     <footer class="site-footer">
         <div class="container">
             <div class="row gy-4">
@@ -453,14 +464,22 @@
                         Navegación
                     </div>
                     <a href="{{ route('home') }}" class="site-footer-link">
-                        <span>➜</span> Inicio
-                    </a>
-                    <a href="{{ route('login') }}" class="site-footer-link">
-                        <span>➜</span> Reservar traslado
-                    </a>
-                    <a href="{{ route('login') }}" class="site-footer-link">
-                        <span>➜</span> Acceder al panel
-                    </a>
+    <span>➜</span> Inicio
+</a>
+
+<a href="{{ auth('admin')->check() || auth('corporate')->check() || auth('web')->check()
+            ? route('transfer.select-type')
+            : route('login') }}"
+   class="site-footer-link">
+    <span>➜</span> Reservar traslado
+</a>
+
+<a href="{{ auth('admin')->check() || auth('corporate')->check() || auth('web')->check()
+            ? route('dashboard')
+            : route('login') }}"
+   class="site-footer-link">
+    <span>➜</span> Acceder al panel
+</a>
                 </div>
 
                 {{-- Columna 3 --}}
