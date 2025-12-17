@@ -174,10 +174,10 @@
                         <label class="form-label">Vehículo</label>
                         <select name="id_vehiculo" class="form-select" required>
                             @foreach($vehiculos as $vehiculo)
-                                <option value="{{ $vehiculo->id_vehiculo }}"
-                                    @selected($vehiculo->id_vehiculo == $reserva->id_vehiculo)>
-                                    {{ $vehiculo->descripcion }}
-                                </option>
+                               <option value="{{ $vehiculo->id_vehiculo }}"
+    @selected($vehiculo->id_vehiculo == $reserva->id_vehiculo)>
+    {{ $vehiculo->descripcion }} — {{ number_format($vehiculo->precio, 2, ',', '.') }} €
+</option>
                             @endforeach
                         </select>
                     </div>
