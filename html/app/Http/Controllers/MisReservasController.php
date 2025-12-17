@@ -235,5 +235,35 @@ class MisReservasController extends Controller
     'reserva' => $reserva
 ]);
 }
+/**
+ * Anular reserva (NO borramos por inconsistencia de datos)
+ */
+public function destroy($id)
+{
+    $reserva = Reserva::findOrFail($id);
+
+    $rol = Auth::guard('admin')->check()
+        ? 'admin'
+        : (Auth::guard('corporate')->check() ? 'hotel' : 'user');
+
+    if (!$reserva->puedeSerModificadaPor($rol)) {
+        return redirect()->route('mis_reservas')
+            ->with('error', 'No tienes permiso para anular esta reserva.');
+    }
+
+    if ($reserva->estado !== 'confirmada') {
+        return redirect()->route('mis_reservas')
+            ->with('error', 'Solo se pueden anular reservas confirmadas.');
+    }
+
+    $reserva->update([
+        'estado' => 'anulada',
+        'fecha_modificacion' => now(),
+    ]);
+
+    return redirect()->route('mis_reservas')
+        ->with('success', 'Reserva anulada correctamente.');
+}
+
 
 }

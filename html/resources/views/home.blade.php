@@ -158,7 +158,10 @@
         <div class="row g-4">
             {{-- Card 1: Aeropuerto → hotel --}}
             <div class="col-md-4">
-                <a href="{{ route('login') }}" class="transfer-card">
+                <a href="{{ auth('admin')->check() || auth('corporate')->check() || auth('web')->check()
+            ? route('transfer.select-type')
+            : route('login') }}"
+   class="transfer-card">
                     <div class="transfer-card-icon">🛬</div>
                     <h3>Aeropuerto → hotel</h3>
                     <p>
@@ -176,7 +179,10 @@
 
             {{-- Card 2: Hotel → aeropuerto --}}
             <div class="col-md-4">
-                <a href="{{ route('login') }}" class="transfer-card">
+                <a href="{{ auth('admin')->check() || auth('corporate')->check() || auth('web')->check()
+                        ? route('transfer.select-type')
+                        : route('login') }}"
+               class="transfer-card">
                     <div class="transfer-card-icon">🛫</div>
                     <h3>Hotel → aeropuerto</h3>
                     <p>
@@ -194,7 +200,10 @@
 
             {{-- Card 3: Ida y vuelta --}}
             <div class="col-md-4">
-                <a href="{{ route('login') }}" class="transfer-card">
+                <a href="{{ auth('admin')->check() || auth('corporate')->check() || auth('web')->check()
+                        ? route('transfer.select-type')
+                        : route('login') }}"
+               class="transfer-card">
                     <div class="transfer-card-icon">🔁</div>
                     <h3>Ida y vuelta</h3>
                     <p>

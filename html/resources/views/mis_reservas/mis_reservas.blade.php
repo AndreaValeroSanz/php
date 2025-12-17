@@ -238,14 +238,16 @@
                             // Determinar Clase Estado
                             $badgeClass = 'status-success';
                             $iconStatus = ''; 
-                            if($reserva->estado_final == 'Anulada') {
+                            if($reserva->estado == 'anulada') {
                                 $badgeClass = 'status-danger';
-                            } elseif($reserva->estado_final == 'Finalizada') {
+                            } elseif($reserva->estado == 'finalizada') {
                                 $badgeClass = 'status-gray';
                             }
                         @endphp
                         <tr
-    onclick="window.location='{{ route('calendar.show', $reserva->id_reserva) }}?from=mis_reservas'"
+    onclick="if (!event.target.closest('.acciones')) {
+        window.location='{{ route('calendar.show', $reserva->id_reserva) }}?from=mis_reservas'
+    }"
     style="cursor:pointer"
 >
                             {{-- REF & LOC --}}
@@ -365,48 +367,73 @@
                             {{-- ESTADO --}}
                             <td class="text-center">
                                 <span class="status-badge {{ $badgeClass }}">
-                                    @if($reserva->estado_final == 'Anulada')
+                                    @if($reserva->estado == 'anulada')
                                         {{-- Icon: X Circle --}}
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    @elseif($reserva->estado_final == 'Finalizada')
+                                    @elseif($reserva->estado == 'finalizada')
                                         {{-- Icon: Check Circle --}}
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                     @else
                                         {{-- Icon: Clock/Active --}}
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                     @endif
-                                    {{ $reserva->estado_final }}
+                                    {{ $reserva->estado }}
                                 </span>
                             </td>
 
                             {{-- ACCIONES --}}
-                            <td class="text-center">
-                                @if($puede_modificar && $reserva->estado_final === 'Confirmada')
-                                    <div class="d-flex gap-1 justify-content-center">
-                                        {{-- Edit Button --}}
-                                        <a href="{{ route('reserva.edit', $reserva->id_reserva) }}" class="btn-icon btn-edit" title="Modificar Reserva">
-                                            {{-- Icon: Pencil --}}
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                              <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                            </svg>
-                                        </a>
+<td class="text-center acciones">
+    @if($puede_modificar && $reserva->estado === 'confirmada')
+        <div class="d-flex gap-1 justify-content-center">
 
-                                        {{-- Delete Form --}}
-                                        <form action="{{ route('reserva.destroy', $reserva->id_reserva) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Estás seguro de querer anular esta reserva?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn-icon btn-delete" title="Anular Reserva">
-                                                {{-- Icon: Trash --}}
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
-                                        </form>
-                                    </div>
-                                @else
-                                    <span class="small text-muted fst-italic disabled-action">Bloqueado</span>
-                                @endif
-                            </td>
+            {{-- Edit Button --}}
+            <a
+                href="{{ route('reserva.edit', $reserva->id_reserva) }}"
+                class="btn-icon btn-edit"
+                title="Modificar Reserva"
+                onclick="event.stopPropagation();"
+            >
+                {{-- Icon: Pencil --}}
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                </svg>
+            </a>
+
+            {{-- Delete / Anular --}}
+            <form
+                action="{{ route('reserva.destroy', $reserva->id_reserva) }}"
+                method="POST"
+                style="display:inline-block;"
+                onsubmit="event.stopPropagation(); return confirm('¿Estás seguro de querer anular esta reserva?');"
+            >
+                @csrf
+                @method('DELETE')
+
+                <button
+                    type="submit"
+                    class="btn-icon btn-delete"
+                    title="Anular Reserva"
+                    onclick="event.stopPropagation();"
+                >
+                    {{-- Icon: Trash --}}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862
+                              a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6
+                              m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            </form>
+
+        </div>
+    @else
+        <span class="small text-muted fst-italic disabled-action">Bloqueado</span>
+    @endif
+</td>
+
                         </tr>
                         @endforeach
                     </tbody>
