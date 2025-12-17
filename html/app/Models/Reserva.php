@@ -81,9 +81,16 @@ class Reserva extends Model
     }
 
     public function zona()
-    {
-        return $this->belongsTo(\App\Models\Zona::class, 'id_destino', 'id_zona');
-    }
+{
+    return $this->hasOneThrough(
+        Zona::class,
+        Hotel::class,
+        'id_hotel', // FK en hoteles
+        'id_zona',  // PK en zonas
+        'id_hotel', // FK en reservas
+        'id_zona'   // FK en hoteles
+    );
+}
 
     public function owner()
     {
