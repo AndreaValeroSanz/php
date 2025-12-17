@@ -402,6 +402,35 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const fechaIda = document.getElementById('fecha_llegada');
+    const fechaVuelta = document.getElementById('fecha_vuelo_salida');
+
+    if (!fechaIda || !fechaVuelta) return;
+
+    function syncFechaVuelta() {
+        const idaValue = fechaIda.value;
+
+        if (!idaValue) return;
+
+        // La vuelta NO puede ser anterior a la ida
+        fechaVuelta.min = idaValue;
+
+        // Si ya había una fecha de vuelta anterior → resetear
+        if (fechaVuelta.value && fechaVuelta.value < idaValue) {
+            fechaVuelta.value = idaValue;
+        }
+    }
+
+    // Al cambiar la IDA
+    fechaIda.addEventListener('change', syncFechaVuelta);
+
+    // Al cargar la página (por si hay old())
+    syncFechaVuelta();
+});
+</script>
+
 @if(!Auth::guard('corporate')->check())
 <script>
 document.addEventListener('DOMContentLoaded', function () {
