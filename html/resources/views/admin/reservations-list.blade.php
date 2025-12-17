@@ -181,9 +181,9 @@
                         <label class="form-label fw-semibold text-teal">Estado</label>
                         <select name="estado" class="form-select">
                             <option value="">Todos</option>
-                            <option value="Confirmada" {{ request('estado')=='Confirmada' ? 'selected' : '' }}>Confirmada</option>
-                            <option value="Finalizada" {{ request('estado')=='Finalizada' ? 'selected' : '' }}>Finalizada</option>
-                            <option value="Anulada" {{ request('estado')=='Anulada' ? 'selected' : '' }}>Anulada</option>
+                            <option value="confirmada" {{ request('estado')=='confirmada' ? 'selected' : '' }}>Confirmada</option>
+<option value="finalizada" {{ request('estado')=='finalizada' ? 'selected' : '' }}>Finalizada</option>
+<option value="anulada" {{ request('estado')=='anulada' ? 'selected' : '' }}>Anulada</option>
                         </select>
                     </div>
 
@@ -242,7 +242,7 @@
                 });
 
                 $reservasFiltradas = $reservasOrdenadas->filter(function ($reserva) {
-                    if (request('estado') && $reserva->estado_final !== request('estado')) {
+                    if (request('estado') && $reserva->estado !== request('estado')) {
                         return false;
                     }
 
@@ -280,11 +280,11 @@
                     <tbody>
                         @foreach($reservasFiltradas as $reserva)
                              <tr class="
-        @if($reserva->estado_final === 'Confirmada')
+        @if($reserva->estado === 'confirmada')
             reserva-confirmada
-        @elseif($reserva->estado_final === 'Finalizada')
+        @elseif($reserva->estado === 'finalizada')
             reserva-finalizada
-        @elseif($reserva->estado_final === 'Anulada')
+        @elseif($reserva->estado === 'anulada')
             reserva-anulada
         @endif
     ">

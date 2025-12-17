@@ -11,11 +11,14 @@ class CalendarController extends Controller
 {
     public function index()
     {
+        Reserva::sincronizarReservasFinalizadas();
         return view('calendar.calendar');
     }
 
     public function events(Request $request)
     {
+        Reserva::sincronizarReservasFinalizadas();
+        
         $from = $request->query('from');
         $to   = $request->query('to');
         $fromDate = substr($from, 0, 10);
@@ -108,6 +111,7 @@ class CalendarController extends Controller
 
     public function show($id)
 {
+    Reserva::sincronizarReservasFinalizadas();
     $reserva = Reserva::with([
         'zona',
         'hotel.zona',

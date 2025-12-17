@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\Reserva;
 use App\Models\Hotel;
-use App\Models\Precio;
+use App\Models\Vehiculo;
 
 class MisReservasController extends Controller
 {
@@ -16,6 +16,8 @@ class MisReservasController extends Controller
      */
     public function index()
     {
+        Reserva::sincronizarReservasFinalizadas();
+        
         if (Auth::guard('admin')->check()) {
             $rol = 'admin';
             $user = Auth::guard('admin')->user();
@@ -77,21 +79,9 @@ class MisReservasController extends Controller
         // 🔹 Hoteles SOLO activos
         $hotels = Hotel::where('activo', 1)->get();
 
-        // 🔹 Vehículos con precio (igual que TransferController)
-        $vehiculos = Precio::where('transfer_precios.id_hotel', $reserva->id_destino)
-            ->join(
-                'transfer_vehiculos',
-                'transfer_precios.id_vehiculo',
-                '=',
-                'transfer_vehiculos.id_vehiculo'
-            )
-            ->where('transfer_vehiculos.activo', 1)
-            ->select([
-                'transfer_vehiculos.id_vehiculo',
-                'transfer_vehiculos.descripcion',
-                'transfer_precios.Precio',
-            ])
-            ->get();
+        $vehiculos = Vehiculo::where('activo', 1)
+    ->orderBy('descripcion')
+    ->get();
 
         $vista = match ((int) $reserva->id_tipo_reserva) {
             1 => 'edit_airport_to_hotel',
@@ -197,6 +187,24 @@ class MisReservasController extends Controller
         ?? $request->id_hotel_recogida
         ?? $reserva->id_hotel;
 
+// =====================
+// RECÁLCULO DE PRECIO
+// =====================
+$vehiculo = Vehiculo::findOrFail($request->id_vehiculo);
+$precioBase = $vehiculo->precio;
+
+// Ida y vuelta = doble
+$precioFinal = $precioBase * ($reserva->id_tipo_reserva == 3 ? 2 : 1);
+
+// Comisión del hotel
+$hotel = Hotel::findOrFail($idHotel);
+$porcentajeComision = $hotel->Comision ?? 0;
+
+$comisionGanada = round(
+    $precioFinal * ($porcentajeComision / 100),
+    2
+);
+
     /*
     |--------------------------------------------------------------------------
     | UPDATE REAL (solo columnas existentes)
@@ -226,6 +234,11 @@ class MisReservasController extends Controller
         // HOTEL / DESTINO
         'id_hotel'   => $idHotel,
         'id_destino' => $idHotel,
+
+        //PRECIO
+        'precio_total'    => $precioFinal,
+'comision_ganada' => $comisionGanada,
+
 
         // METADATO
         'fecha_modificacion' => now(),
@@ -264,6 +277,7 @@ public function destroy($id)
     return redirect()->route('mis_reservas')
         ->with('success', 'Reserva anulada correctamente.');
 }
+
 
 
 }

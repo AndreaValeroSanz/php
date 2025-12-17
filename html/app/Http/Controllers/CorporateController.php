@@ -17,6 +17,7 @@ class CorporateController extends Controller
      */
     public function commissions(Request $request)
 {
+    Reserva::sincronizarReservasFinalizadas();
     $user = Auth::guard('corporate')->user();
     if (!$user) {
         abort(403);
@@ -70,7 +71,7 @@ $reservas = $query->get();
             'localizador'    => $reserva->localizador,
             'fecha_traslado' => $fechaTraslado,
             'precio_total'   => $reserva->precio_total,
-            'comision_hotel' => $reserva->precio_total * ($user->Comision / 100),
+            'comision_hotel' => $reserva->comision_ganada,
         ];
     });
 

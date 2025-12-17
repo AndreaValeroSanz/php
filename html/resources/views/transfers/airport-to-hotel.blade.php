@@ -226,7 +226,7 @@
                             <option value="">-- Seleccione un vehículo --</option>
                             @foreach($vehiculos as $vehiculo)
                                 <option value="{{ $vehiculo->id_vehiculo }}">
-                                    {{ $vehiculo->descripcion }} — {{ $vehiculo->Precio }} €
+                                    {{ $vehiculo->descripcion }} — {{ $vehiculo->precio_final }} €
                                 </option>
                             @endforeach
                         </select>
