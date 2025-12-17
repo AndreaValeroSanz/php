@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Hotel;
 use App\Models\Viajero;
 use App\Models\Admin;
+use Illuminate\Support\Facades\DB;
 
 
 class Reserva extends Model
@@ -171,21 +172,6 @@ public function fechaLimite()
     return null;
 }
 
-public function getEstadoFinalAttribute()
-{
-    if ($this->estado === 'anulada') {
-        return 'Anulada';
-    }
-
-    $fechaTraslado = $this->fechaLimite();
-
-    if ($fechaTraslado && $fechaTraslado->isPast()) {
-        return 'Finalizada';
-    }
-
-    return 'Confirmada';
-}
-
 
 //Descriptores para mostrar tipo de traslado en lugar de ID's
 public function getTipoTrasladoNombreAttribute()
@@ -226,5 +212,51 @@ public function puedeSerModificadaPor(string $rol): bool
     return now()->diffInHours($fechaTraslado, false) > 48;
 }
 
+// App\Models\Reserva.php
+public function fechaFinTraslado(): ?\Carbon\Carbon
+{
+    return match ($this->id_tipo_reserva) {
+        1 => $this->fecha_entrada && $this->hora_entrada
+            ? \Carbon\Carbon::parse($this->fecha_entrada.' '.$this->hora_entrada)
+            : null,
+
+        2, 3 => $this->fecha_vuelo_salida && $this->hora_recogida_hotel
+            ? \Carbon\Carbon::parse($this->fecha_vuelo_salida.' '.$this->hora_recogida_hotel)
+            : null,
+
+        default => null,
+    };
+}
+
+public static function sincronizarReservasFinalizadas(): void
+{
+    DB::statement("
+        UPDATE transfer_reservas
+        SET
+            estado = 'finalizada',
+            comision_liquidada = comision_ganada,
+            fecha_modificacion = NOW()
+        WHERE
+            estado = 'confirmada'
+        AND
+        (
+            (
+                id_tipo_reserva IN (1,3)
+                AND DATE_ADD(
+                    TIMESTAMP(fecha_entrada, hora_entrada),
+                    INTERVAL -1 HOUR
+                ) < NOW()
+            )
+            OR
+            (
+                id_tipo_reserva = 2
+                AND DATE_ADD(
+                    TIMESTAMP(fecha_vuelo_salida, hora_recogida_hotel),
+                    INTERVAL -1 HOUR
+                ) < NOW()
+            )
+        )
+    ");
+}
 
 }

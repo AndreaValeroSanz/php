@@ -15,6 +15,8 @@ class AdminHotelController extends Controller
      */
     public function index()
     {
+        Reserva::sincronizarReservasFinalizadas();
+        
         $hoteles = Hotel::orderBy('nombre')->get();
         $zonas   = DB::table('transfer_zonas')->get();
 
