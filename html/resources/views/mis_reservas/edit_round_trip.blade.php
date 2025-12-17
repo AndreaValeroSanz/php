@@ -76,6 +76,19 @@
 <div class="panel-header">
     <h4>Editar Reserva: Ida y Vuelta</h4>
 </div>
+@if ($errors->any())
+    <div class="p-3">
+        <div class="alert alert-danger mb-0">
+            <strong>Revisa el formulario:</strong>
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+@endif
+
 
 <form method="POST" action="{{ route('reserva.update', $reserva->id_reserva) }}">
 @csrf
@@ -98,8 +111,10 @@
     <div class="col-md-4 mb-3">
         <label class="form-label">Número de Vuelo</label>
         <input type="text" class="form-control"
-               name="numero_vuelo_entrada"
-               value="{{ old('numero_vuelo_entrada', $reserva->numero_vuelo_entrada) }}">
+       name="numero_vuelo_entrada"
+       value="{{ old('numero_vuelo_entrada', $reserva->numero_vuelo_entrada) }}"
+       required>
+
     </div>
 
     <div class="col-md-4 mb-3">
@@ -172,6 +187,15 @@
                value="{{ old('hora_vuelo_salida', $reserva->hora_vuelo_salida) }}"
                required>
     </div>
+
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Número de Vuelo</label>
+        <input type="text" class="form-control"
+            name="numero_vuelo_salida"
+            value="{{ old('numero_vuelo_salida', $reserva->numero_vuelo_salida) }}"
+            required>
+    </div>
+
 
     <div class="col-md-6 mb-3">
         <label class="form-label">Hora de Recogida en Hotel</label>

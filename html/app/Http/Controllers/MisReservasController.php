@@ -17,7 +17,7 @@ class MisReservasController extends Controller
     public function index()
     {
         Reserva::sincronizarReservasFinalizadas();
-        
+
         if (Auth::guard('admin')->check()) {
             $rol = 'admin';
             $user = Auth::guard('admin')->user();
@@ -33,7 +33,7 @@ class MisReservasController extends Controller
 
         $query = Reserva::with(['hotel', 'owner', 'zona', 'vehiculo'])
             ->orderByRaw("
-                CASE 
+                CASE
                     WHEN id_tipo_reserva = 1 THEN fecha_entrada
                     WHEN id_tipo_reserva = 2 THEN fecha_vuelo_salida
                     WHEN id_tipo_reserva = 3 THEN fecha_entrada
@@ -186,24 +186,28 @@ class MisReservasController extends Controller
     $idHotel = $request->id_hotel_destino
         ?? $request->id_hotel_recogida
         ?? $reserva->id_hotel;
+    if ($rol === 'hotel') {
+    $idHotel = Auth::guard('corporate')->user()->id_hotel;
+    }
 
-// =====================
-// RECÁLCULO DE PRECIO
-// =====================
-$vehiculo = Vehiculo::findOrFail($request->id_vehiculo);
-$precioBase = $vehiculo->precio;
 
-// Ida y vuelta = doble
-$precioFinal = $precioBase * ($reserva->id_tipo_reserva == 3 ? 2 : 1);
+    // =====================
+    // RECÁLCULO DE PRECIO
+    // =====================
+    $vehiculo = Vehiculo::findOrFail($request->id_vehiculo);
+    $precioBase = $vehiculo->precio;
 
-// Comisión del hotel
-$hotel = Hotel::findOrFail($idHotel);
-$porcentajeComision = $hotel->Comision ?? 0;
+    // Ida y vuelta = doble
+    $precioFinal = $precioBase * ($reserva->id_tipo_reserva == 3 ? 2 : 1);
 
-$comisionGanada = round(
-    $precioFinal * ($porcentajeComision / 100),
-    2
-);
+    // Comisión del hotel
+    $hotel = Hotel::findOrFail($idHotel);
+    $porcentajeComision = $hotel->Comision ?? 0;
+
+    $comisionGanada = round(
+        $precioFinal * ($porcentajeComision / 100),
+        2
+    );
 
     /*
     |--------------------------------------------------------------------------
@@ -211,38 +215,34 @@ $comisionGanada = round(
     |--------------------------------------------------------------------------
     */
     $reserva->update([
-        // CONTACTO
-        'email_cliente' => $request->email_contacto,
+    'email_cliente' => $request->input('email_contacto') ?? $request->input('email_cliente'),
 
-        // VEHÍCULO / VIAJEROS
-        'num_viajeros' => $request->num_viajeros,
-        'id_vehiculo'  => $request->id_vehiculo,
+    'num_viajeros' => $request->num_viajeros,
+    'id_vehiculo'  => $request->id_vehiculo,
 
-        // IDA
-        'origen_vuelo_entrada' => $request->origen_vuelo_entrada,
-        'fecha_entrada'        => $request->fecha_entrada,
-        'hora_entrada'         => $request->hora_entrada,
-        'numero_vuelo_entrada' => $request->numero_vuelo_entrada,
+    'origen_vuelo_entrada' => $request->origen_vuelo_entrada,
+    'fecha_entrada'        => $request->fecha_entrada,
+    'hora_entrada'         => $request->hora_entrada,
+    'numero_vuelo_entrada' => $request->numero_vuelo_entrada,
 
-        // VUELTA
-        'origen_vuelo_salida'  => $request->origen_vuelo_salida,
-        'fecha_vuelo_salida'   => $request->fecha_vuelo_salida,
-        'hora_vuelo_salida'    => $request->hora_vuelo_salida,
-        'numero_vuelo_salida'  => $request->numero_vuelo_salida,
-        'hora_recogida_hotel'  => $request->hora_recogida_hotel,
+    'origen_vuelo_salida'  => $request->origen_vuelo_salida,
+    'fecha_vuelo_salida'   => $request->fecha_vuelo_salida,
+    'hora_vuelo_salida'    => $request->hora_vuelo_salida,
+    'numero_vuelo_salida'  => $request->numero_vuelo_salida,
+    'hora_recogida_hotel'  => $request->hora_recogida_hotel,
 
-        // HOTEL / DESTINO
-        'id_hotel'   => $idHotel,
-        'id_destino' => $idHotel,
-
-        //PRECIO
-        'precio_total'    => $precioFinal,
-'comision_ganada' => $comisionGanada,
+    // HOTEL REAL
+    'id_hotel'   => $idHotel,
+    'id_destino' => $idHotel,
 
 
-        // METADATO
-        'fecha_modificacion' => now(),
-    ]);
+    // PRECIOS
+    'precio_total'    => $precioFinal,
+    'comision_ganada' => $comisionGanada,
+
+    'fecha_modificacion' => now(),
+]);
+
 
     return view('mis_reservas.update_confirmation', [
     'reserva' => $reserva
