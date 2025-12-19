@@ -4,11 +4,8 @@
  * Description: Widget conectado a la API de Laravel (Isla Transfers).
  */
 
-// 1. URL de la API (Ajusta la IP según tu entorno Docker)
-// Si estás en Docker Linux, suele ser 172.17.0.1. Si es Mac/Windows, host.docker.internal
 $api_url = 'http://172.17.0.1:8080/public/api/resumen-zonas'; 
 
-// 2. Conexión
 $response = wp_remote_get($api_url);
 
 if (is_wp_error($response)) {
@@ -16,12 +13,9 @@ if (is_wp_error($response)) {
     return;
 }
 
-// 3. Procesar datos
 $body = wp_remote_retrieve_body($response);
 $data = json_decode($body);
 
-// 4. Extraer la información específica de TU estructura JSON
-// Si la conexión falla o devuelve null, inicializamos valores vacíos
 $total_traslados = isset($data->total_traslados) ? $data->total_traslados : 0;
 $lista_zonas     = isset($data->resumen_por_zona) ? $data->resumen_por_zona : [];
 
@@ -63,7 +57,7 @@ if (empty($lista_zonas)) {
 
 <div class="isla-widget">
     <div class="isla-header">
-        <h3>📊 Actividad por Zonas</h3>
+        <h3>Actividad por Zonas</h3>
         <span class="isla-total-badge">Total Global: <?php echo $total_traslados; ?> traslados</span>
     </div>
 
