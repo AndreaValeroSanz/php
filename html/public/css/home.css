@@ -112,7 +112,7 @@
                 rgba(247,214,116,.30) 70%,
                 rgba(247,214,116,.20) 100%
             ),
-        url('/images/hero_avion_isla.jpg') center/cover no-repeat;
+        url('/public/images/hero_avion_isla.jpg') center/cover no-repeat;
         border-radius: 1.75rem;
         padding: 3rem 2.5rem;
         color: #ffffff;
@@ -829,23 +829,23 @@
 
     /* Imágenes concretas de cada vehículo */
     .fleet-item-1 {
-        background-image: url('/images/sedan_demo.jpg');
+        background-image: url('/public/images/sedan_demo.jpg');
     }
 
     .fleet-item-2 {
-        background-image: url('/images/minivan.jpg');
+        background-image: url('/public/images/minivan.jpg');
     }
 
     .fleet-item-3 {
-        background-image: url('/images/yaris.jpg');
+        background-image: url('/public/images/yaris.jpg');
     }
 
     .fleet-item-4 {
-        background-image: url('/images/mustang.jpg');
+        background-image: url('/public/images/mustang.jpg');
     }
 
     .fleet-item-5 {
-        background-image: url('/images/milano.jpg');
+        background-image: url('/public/images/milano.jpg');
     }
 
     /* Contenedor de iconos */

@@ -23,10 +23,10 @@
 define( 'DB_NAME', 'mysql' );
 
 /** Database username */
-define( 'DB_USER', 'Andrea' );
+define( 'DB_USER', 'root' );
 
 /** Database password */
-define( 'DB_PASSWORD', 'admin' );
+define( 'DB_PASSWORD', '123' );
 
 /** Database hostname */
 define( 'DB_HOST', 'db' );
@@ -89,7 +89,7 @@ define( 'WP_DEBUG', false );
 
 /* Add any custom values between this line and the "stop editing" line. */
 
-
+define('FS_METHOD', 'direct');
 
 /* That's all, stop editing! Happy publishing. */
 
