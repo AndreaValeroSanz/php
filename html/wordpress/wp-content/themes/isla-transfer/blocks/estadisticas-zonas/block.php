@@ -6,7 +6,7 @@
 
 // --- 1. LÓGICA PHP (TU API) ---
 // Recuerda: Si estás en Docker, usamos la IP interna + /public
-$api_url = 'https://fp064.techlab.uoc.edu/~uocx1/producto3/public/api/resumen-zonas';
+$api_url = 'https://fp064.techlab.uoc.edu/~uocx1/producto3/api/resumen-zonas';
 
 $response = wp_remote_get($api_url);
 $error_api = false;
